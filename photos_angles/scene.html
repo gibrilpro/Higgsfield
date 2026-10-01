@@ -1,0 +1,109 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#ead7bf;overflow:hidden}canvas{display:block}</style>
+<script type="importmap">{"imports":{"three":"./node_modules/three/build/three.module.js","three/addons/":"./node_modules/three/examples/jsm/"}}</script>
+</head><body>
+<script type="module">
+import * as THREE from 'three';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+
+const p = Object.fromEntries(new URLSearchParams(location.hash.slice(1)));
+const az = +(p.az ?? 30), el = +(p.el ?? 12), dist = +(p.dist ?? 40), bg = p.bg ?? 'ead7bf';
+const S = 1024;
+document.body.style.background = '#' + bg;
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(2); renderer.setSize(S, S);
+renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+document.body.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color('#' + bg);
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+scene.environmentIntensity = 0.55;
+
+// Materials
+const body = new THREE.MeshPhysicalMaterial({ color: 0x141414, roughness: 0.42, metalness: 0.0, clearcoat: 0.35, clearcoatRoughness: 0.45 });
+const ring = new THREE.MeshPhysicalMaterial({ color: 0x0c0c0c, roughness: 0.3, clearcoat: 0.6, clearcoatRoughness: 0.2 });
+const rubber = new THREE.MeshStandardMaterial({ color: 0x101010, roughness: 0.95 });
+const gold = new THREE.MeshPhysicalMaterial({ color: 0xe6bc66, metalness: 1.0, roughness: 0.32, clearcoat: 0.3, envMapIntensity: 2.2 });
+const steel = new THREE.MeshStandardMaterial({ color: 0x888888, metalness: 1.0, roughness: 0.35 });
+
+const gun = new THREE.Group();
+const add = (geo, mat, f) => { const m = new THREE.Mesh(geo, mat); m.castShadow = true; m.receiveShadow = true; f?.(m); gun.add(m); return m; };
+
+// Dimensions (cm): 13.5 long, 14 tall, 4.8 wide
+const R = 2.55;            // barrel radius
+const by = 11.4;           // barrel axis height
+const hx = 2.6;            // handle x center
+// Barrel: lathe along x with rounded rear
+const prof = [];
+const L0 = -1.2, L1 = 6.6; // front .. rear (x)
+for (let i = 0; i <= 12; i++) { const a = i / 12 * Math.PI / 2; prof.push(new THREE.Vector2(R * 0.82 + R * 0.18 * Math.sin(a), L0 - 0.5 + 0.5 * Math.sin(a))); }
+for (let i = 0; i <= 16; i++) { const a = i / 16 * Math.PI / 2; prof.push(new THREE.Vector2(R * Math.cos(a) * (1 - 0.0) , L1 + 1.4 * Math.sin(a) * 0.45)); }
+prof.push(new THREE.Vector2(0.001, L1 + 0.63));
+add(new THREE.LatheGeometry(prof, 64), body, m => { m.rotation.z = -Math.PI / 2; m.position.y = by; });
+// Front collar steps
+const collar = (r, len, x, mat) => add(new THREE.CylinderGeometry(r, r, len, 64), mat, m => { m.rotation.z = Math.PI / 2; m.position.set(x, by, 0); });
+collar(2.25, 0.9, -2.05, ring);
+collar(2.0, 0.25, -2.6, body);
+collar(1.95, 0.9, -3.1, ring);
+collar(1.55, 0.5, -3.75, body);
+collar(0.75, 1.2, -4.5, steel);
+// Ball head
+add(new THREE.SphereGeometry(2.2, 64, 48), rubber, m => m.position.set(-6.6, by, 0));
+add(new THREE.CylinderGeometry(0.9, 0.7, 1.4, 48), rubber, m => { m.rotation.z = Math.PI / 2; m.position.set(-4.8, by, 0); });
+// Gold side strips (both sides)
+for (const s of [1, -1]) {
+  add(new RoundedBoxGeometry(4.0, 0.75, 0.45, 4, 0.37), gold, m => m.position.set(3.1, by + 0.45, s * (R - 0.12)));
+  add(new RoundedBoxGeometry(4.35, 1.05, 0.3, 4, 0.5), ring, m => m.position.set(3.1, by + 0.45, s * (R - 0.2)));
+}
+// Small button hole under collar
+add(new THREE.CylinderGeometry(0.18, 0.18, 0.2, 24), steel, m => { m.rotation.x = Math.PI / 2; m.position.set(0.3, by - 1.0, R * 0.92); });
+// Handle (lathe vertical, slightly tapered)
+const hp = [new THREE.Vector2(0.001, 0)];
+for (let i = 0; i <= 8; i++) { const a = i / 8 * Math.PI / 2; hp.push(new THREE.Vector2(2.1 + 0.3 * Math.sin(a), 0.3 - 0.3 * Math.cos(a))); }
+hp.push(new THREE.Vector2(2.4, 1.15), new THREE.Vector2(2.32, 1.2), new THREE.Vector2(2.3, 10.0), new THREE.Vector2(0.001, 10.0));
+const handle = add(new THREE.LatheGeometry(hp.slice(0, -1).concat([new THREE.Vector2(2.3, 10.0)]), 64), body, m => m.position.set(hx, 0, 0));
+// Gold base band
+const gp = [new THREE.Vector2(0.001, 0)];
+for (let i = 0; i <= 8; i++) { const a = i / 8 * Math.PI / 2; gp.push(new THREE.Vector2(2.1 + 0.3 * Math.sin(a), 0.3 - 0.3 * Math.cos(a))); }
+gp.push(new THREE.Vector2(2.42, 1.15), new THREE.Vector2(0.001, 1.15));
+add(new THREE.LatheGeometry(gp, 64), gold, m => m.position.set(hx, 0, 0));
+
+
+gun.position.x = -0.3;
+gun.rotation.y = 0;
+scene.add(gun);
+
+// Ground
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.ShadowMaterial({ opacity: 0.22 }));
+ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground);
+
+{ const c=document.createElement('canvas'); c.width=c.height=256; const g=c.getContext('2d');
+  const gr=g.createRadialGradient(128,128,0,128,128,128); gr.addColorStop(0,'rgba(60,40,20,0.55)'); gr.addColorStop(1,'rgba(60,40,20,0)');
+  g.fillStyle=gr; g.fillRect(0,0,256,256);
+  const blob=new THREE.Mesh(new THREE.PlaneGeometry(9,9), new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(c), transparent:true, depthWrite:false}));
+  blob.rotation.x=-Math.PI/2; blob.position.set(hx-0.3,0.01,0); scene.add(blob); }
+// Lights
+const key = new THREE.DirectionalLight(0xfff3e2, 2.6);
+key.position.set(-6, 40, 8); key.castShadow = false;
+key.shadow.mapSize.set(384, 384); key.shadow.radius = 6; key.shadow.bias = -0.0004;
+Object.assign(key.shadow.camera, { left: -20, right: 20, top: 20, bottom: -20, near: 1, far: 100 });
+scene.add(key);
+const rim = new THREE.DirectionalLight(0xffe2b0, 1.6); rim.position.set(20, 18, -22); scene.add(rim);
+const fill = new THREE.DirectionalLight(0xffffff, 0.45); fill.position.set(10, 6, 25); scene.add(fill);
+scene.add(new THREE.HemisphereLight(0xfff6ea, 0xcfb894, 0.5));
+
+// Camera orbit around product center
+const target = new THREE.Vector3(-1.1, 7.0, 0);
+const cam = new THREE.PerspectiveCamera(30, 1, 0.1, 500);
+const a = THREE.MathUtils.degToRad(az), e = THREE.MathUtils.degToRad(el);
+cam.position.set(target.x + dist * Math.cos(e) * Math.sin(a), target.y + dist * Math.sin(e), target.z + dist * Math.cos(e) * Math.cos(a));
+cam.lookAt(target);
+renderer.render(scene, cam);
+window.done = true;
+</script></body></html>
