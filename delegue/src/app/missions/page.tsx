@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { requireUser } from "@/lib/auth";
-import { listMissionsFor, STATUS_LABEL } from "@/lib/missions";
+import { autoValidateDue, listMissionsFor, STATUS_LABEL } from "@/lib/missions";
 import { statusClass } from "@/components/status";
 import { eur } from "@/lib/catalog";
 import { PageHead } from "@/components/ui";
@@ -9,6 +9,7 @@ export const metadata = { title: "Mes missions" };
 
 export default async function Missions() {
   const u = await requireUser("/missions");
+  await autoValidateDue();
   const missions = await listMissionsFor(u);
   const held = missions.filter((m) => ["paid", "in_progress", "delivered", "disputed"].includes(m.status)).reduce((a, m) => a + m.amount_cents, 0);
   return (

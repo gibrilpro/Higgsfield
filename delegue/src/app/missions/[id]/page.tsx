@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth";
-import { canSee, getMission, listMessages, STATUS_LABEL, TRACK } from "@/lib/missions";
+import { AUTO_VALIDATE_DAYS, autoValidateDue, canSee, getMission, getReview, listMessages, STATUS_LABEL, TRACK } from "@/lib/missions";
 import { eur } from "@/lib/catalog";
 import { missionAction } from "../../actions";
 import { Flash } from "@/components/ui";
@@ -27,9 +27,11 @@ export default async function MissionPage({ params, searchParams }: { params: Pr
   const { id } = await params;
   const sp = await searchParams;
   const u = await requireUser(`/missions/${id}`);
+  await autoValidateDue();
   const m = await getMission(id);
   if (!m || !canSee(m, u)) redirect("/missions");
   const msgs = await listMessages(m.id);
+  const review = m.status === "completed" ? await getReview(m.id) : null;
   const isClient = m.client_id === u.id;
   const isExpert = m.expert_id === u.id;
   const step = TRACK.indexOf(m.status);
@@ -96,11 +98,25 @@ export default async function MissionPage({ params, searchParams }: { params: Pr
           ) : null}
           {m.status === "in_progress" && isClient ? <p className="desc">L&apos;expert installe la solution. Échangez avec lui dans le fil de discussion.</p> : null}
           {m.status === "delivered" && isClient ? (<>
-            <p className="desc">Testez la solution. Si tout fonctionne, validez : l&apos;expert sera payé.</p>
+            <p className="desc">Testez la solution. Si tout fonctionne, validez : l&apos;expert sera payé. Si quelque chose ne va pas, demandez une correction dans les échanges.</p>
+            <p className="tiny">Sans réponse de votre part {AUTO_VALIDATE_DAYS} jours après la livraison, la mission est validée automatiquement.</p>
             <Op id={m.id} op="validate" label="Valider et payer l'expert" cls="btn accent" />
           </>) : null}
-          {m.status === "delivered" && isExpert ? <p className="desc">En attente de la validation du client.</p> : null}
+          {m.status === "delivered" && isExpert ? <p className="desc">En attente de la validation du client (validation automatique après {AUTO_VALIDATE_DAYS} jours sans réponse).</p> : null}
           {m.status === "completed" ? <p className="desc">Mission terminée{isExpert ? (m.stripe_transfer_id ? ". Votre part a été versée." : ". Votre part sera versée dès que vos paiements seront activés.") : ". Merci !"}</p> : null}
+          {m.status === "completed" && review ? (
+            <div className="note"><b>Avis du client : {"★".repeat(review.rating)}{"☆".repeat(5 - review.rating)}</b>{review.comment ? <p style={{ marginTop: 4 }}>{review.comment}</p> : null}</div>
+          ) : null}
+          {m.status === "completed" && isClient && !review ? (
+            <Op id={m.id} op="review" label="Publier mon avis" cls="btn accent" pending="Envoi…">
+              <fieldset style={{ border: 0, padding: 0, margin: 0 }}>
+                <legend className="label" style={{ marginBottom: 6 }}>Notez l&apos;expert</legend>
+                <div className="checks">{[5, 4, 3, 2, 1].map((n) => <label key={n}><input type="radio" name="rating" value={n} required defaultChecked={n === 5} />{"★".repeat(n)}</label>)}</div>
+              </fieldset>
+              <label className="label" htmlFor="comment">Votre avis (facultatif)</label>
+              <textarea id="comment" name="comment" rows={3} maxLength={1000} placeholder="Qualité du travail, délais, communication…" />
+            </Op>
+          ) : null}
           {m.status === "disputed" ? <p className="desc">Un litige est ouvert. L&apos;équipe délègue. examine les échanges et tranche.</p> : null}
           {m.status === "disputed" && u.is_admin ? (<>
             <Op id={m.id} op="release" label="Payer l'expert" cls="btn primary" />

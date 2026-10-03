@@ -3,7 +3,7 @@ import { requireAdmin } from "@/lib/auth";
 import { listExpertsByStatus } from "@/lib/experts";
 import { query } from "@/lib/db";
 import { eur } from "@/lib/catalog";
-import { STATUS_LABEL, type Mission } from "@/lib/missions";
+import { autoValidateDue, STATUS_LABEL, type Mission } from "@/lib/missions";
 import { adminExpertAction } from "../actions";
 import { PageHead } from "@/components/ui";
 import { SubmitButton } from "@/components/SubmitButton";
@@ -12,6 +12,7 @@ export const metadata = { title: "Administration", robots: { index: false } };
 
 export default async function Admin() {
   await requireAdmin();
+  await autoValidateDue();
   const [pending, approved] = await Promise.all([listExpertsByStatus("pending"), listExpertsByStatus("approved")]);
   const disputes = await query<Mission>("SELECT * FROM missions WHERE status = 'disputed' ORDER BY updated_at ASC");
   const stats = await query<{ status: string; n: number; total: number; fees: number }>("SELECT status, COUNT(*) AS n, SUM(amount_cents) AS total, SUM(commission_cents) AS fees FROM missions GROUP BY status");

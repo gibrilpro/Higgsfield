@@ -41,6 +41,11 @@ const SCHEMA = [
   `CREATE TABLE IF NOT EXISTS messages (
     id TEXT PRIMARY KEY, mission_id TEXT NOT NULL REFERENCES missions(id) ON DELETE CASCADE,
     user_id TEXT NOT NULL REFERENCES users(id), body TEXT NOT NULL, created_at INTEGER NOT NULL)`,
+  `CREATE TABLE IF NOT EXISTS reviews (
+    mission_id TEXT PRIMARY KEY REFERENCES missions(id) ON DELETE CASCADE,
+    expert_id TEXT NOT NULL REFERENCES users(id), client_id TEXT NOT NULL REFERENCES users(id),
+    rating INTEGER NOT NULL CHECK (rating BETWEEN 1 AND 5), comment TEXT NOT NULL, created_at INTEGER NOT NULL)`,
+  `CREATE INDEX IF NOT EXISTS idx_reviews_expert ON reviews(expert_id, created_at)`,
   `CREATE INDEX IF NOT EXISTS idx_missions_client ON missions(client_id)`,
   `CREATE INDEX IF NOT EXISTS idx_missions_expert ON missions(expert_id)`,
   `CREATE INDEX IF NOT EXISTS idx_messages_mission ON messages(mission_id, created_at)`,

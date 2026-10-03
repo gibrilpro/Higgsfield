@@ -1,5 +1,6 @@
 // Parcours complet en mode démo, sur une base vide. Usage : BASE=http://localhost:3100 node tests/e2e.mjs
 import { chromium } from "playwright";
+import { createClient } from "@libsql/client";
 
 const BASE = process.env.BASE || "http://localhost:3100";
 const SHOTS = process.env.SHOTS || null;
@@ -19,12 +20,12 @@ async function signup(p, role, name, email) {
   await p.goto(`${BASE}/inscription?role=${role}`);
   await p.fill("#name", name); await p.fill("#email", email); await p.fill("#password", "motdepasse123");
   await p.check('input[name="cgu"]');
-  await p.click('button[type="submit"]:has-text("Créer mon compte")');
-  await p.waitForLoadState("networkidle");
+  await Promise.all([p.waitForResponse((r) => r.request().method() === "POST"), p.click('button[type="submit"]:has-text("Créer mon compte")')]);
+  await p.waitForLoadState("load"); await p.waitForTimeout(400);
 }
 const clickOp = async (p, label) => {
   await Promise.all([p.waitForResponse((r) => r.request().method() === "POST"), p.click(`button:has-text("${label}")`)]);
-  await p.waitForLoadState("networkidle");
+  await p.waitForLoadState("load"); await p.waitForTimeout(400);
 };
 const waitStatus = async (p, text) => { try { await p.waitForSelector(`.status:has-text("${text}")`, { timeout: 8000 }); return true; } catch { return false; } };
 const stamp = Date.now();
@@ -46,11 +47,12 @@ const admin = await ctx("admin");
 await signup(admin, "client", "Admin", "admin@test.fr");
 if (admin.url().includes("/inscription")) {
   await admin.goto(`${BASE}/connexion`); await admin.fill("#email", "admin@test.fr"); await admin.fill("#password", "motdepasse123");
-  await admin.click('.auth button[type="submit"]'); await admin.waitForLoadState("networkidle");
+  await Promise.all([admin.waitForResponse((r) => r.request().method() === "POST"), admin.click('.auth button[type="submit"]')]);
+  await admin.waitForLoadState("load"); await admin.waitForTimeout(400);
 }
 await admin.goto(`${BASE}/admin`);
 (await admin.locator("text=Thomas Lefèvre").count()) ? ok("Admin voit l'expert à vérifier") : fail("admin liste");
-await admin.click('button:has-text("Valider")'); await admin.waitForLoadState("networkidle");
+await clickOp(admin, "Valider");
 await admin.goto(`${BASE}/experts`);
 (await admin.locator("text=Thomas Lefèvre").count()) ? ok("Expert validé et visible publiquement") : fail("expert visible");
 
@@ -100,6 +102,30 @@ await client.goto(missionUrl);
 await clickOp(client, "Valider et payer l'expert");
 (await waitStatus(client, "Terminée")) ? ok("Validation → mission terminée, expert payé") : fail("validation");
 if (SHOTS) await client.screenshot({ path: `${SHOTS}/d_mission.png`, fullPage: true });
+
+// 6b. Review
+await client.check('input[name="rating"][value="5"]');
+await client.fill("#comment", "Rapide, clair et efficace. Je recommande !");
+await clickOp(client, "Publier mon avis");
+(await client.waitForSelector("text=Avis du client", { timeout: 8000 }).then(() => true, () => false)) ? ok("Avis client publié") : fail("avis");
+await client.goto(`${BASE}/experts`);
+(await client.locator("text=★ 5.0 (1 avis)").count()) ? ok("La note apparaît sur la fiche de l'expert") : fail("note expert");
+await client.goto(missionUrl);
+
+// 6c. Auto-validation after 14 days without answer (second mission, delivery date pushed back)
+await client.goto(`${BASE}/experts`); await client.click('a:has-text("Voir le profil")'); await client.click('a:has-text("Proposer une mission")');
+await client.fill("#title", "Réponses aux avis Google"); await client.fill("#brief", "Je voudrais répondre automatiquement aux avis Google de ma boulangerie.");
+await client.click('button:has-text("Continuer vers le paiement")'); await client.waitForURL(/\/missions\/[0-9a-f-]{36}$/);
+const m2 = client.url(); await clickOp(client, "Payer");
+await expert.goto(m2); await clickOp(expert, "Accepter la mission"); await clickOp(expert, "Marquer comme livrée");
+if (process.env.DATABASE_URL) {
+  const db = createClient({ url: process.env.DATABASE_URL });
+  await db.execute({ sql: "UPDATE missions SET updated_at = ? WHERE id = ?", args: [Date.now() - 15 * 86400_000, m2.split("/").pop()] });
+  await client.goto(m2);
+  (await waitStatus(client, "Terminée")) && (await client.locator("text=Validation automatique").count()) ? ok("Validation automatique après 14 jours sans réponse") : fail("auto-validation");
+} else console.log("(auto-validation non testée : DATABASE_URL absent)");
+await client.goto(`${BASE}/experts/rejoindre`);
+(await client.locator("text=experts fondateurs").count()) ? ok("Page de recrutement des experts") : fail("page recrutement");
 
 // 7. Replay protection: re-validate is refused
 const r = await client.request.get(missionUrl);

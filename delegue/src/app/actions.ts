@@ -11,7 +11,7 @@ import { createDiagnostic } from "@/lib/diagnostic";
 import { getExpert, setExpertStatus, upsertExpertProfile } from "@/lib/experts";
 import {
   adminResolve, cancelUnpaid, canSee, createMission, deliver, expertRespond, getMission,
-  MissionError, openDispute, payPendingTransfers, postMessage, startPayment, validate,
+  leaveReview, MissionError, openDispute, payPendingTransfers, postMessage, startPayment, validate,
 } from "@/lib/missions";
 import { accountPayoutsEnabled, createConnectAccount, onboardingLink, stripeEnabled } from "@/lib/payments";
 import { run } from "@/lib/db";
@@ -166,6 +166,7 @@ export async function missionAction(fd: FormData) {
       case "release": await adminResolve(m, u, "release"); break;
       case "refund": await adminResolve(m, u, "refund"); break;
       case "message": await postMessage(m, u, str(fd, "body")); break;
+      case "review": await leaveReview(m, u, Number(str(fd, "rating")), str(fd, "comment")); break;
       default: throw new MissionError("Action inconnue.");
     }
   } catch (e) {

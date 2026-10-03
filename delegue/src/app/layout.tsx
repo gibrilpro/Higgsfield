@@ -28,7 +28,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               {user ? <Link href="/missions">Mes missions</Link> : null}
               {user?.role === "expert" ? <Link href="/expert/profil">Mon profil expert</Link> : null}
               {user?.is_admin ? <Link href="/admin">Administration</Link> : null}
-              {!user ? <Link href="/inscription?role=expert">Devenir expert</Link> : null}
+              {!user ? <Link href="/experts/rejoindre">Devenir expert</Link> : null}
             </nav>
             <div className="navright">
               {user ? (

@@ -86,12 +86,12 @@ export default async function Home({ searchParams }: { searchParams: Promise<Rec
       <section className="block">
         <div className="sec-head">
           <div><h2>Des experts vérifiés</h2><p>Chaque expert est validé par notre équipe avant d&apos;être visible.</p></div>
-          <Link className="btn sm" href="/inscription?role=expert">Devenir expert</Link>
+          <Link className="btn sm" href="/experts/rejoindre">Devenir expert</Link>
         </div>
         {experts.length ? (
           <div className="grid">{experts.map((e) => <ExpertCard key={e.user_id} e={e} />)}</div>
         ) : (
-          <div className="empty"><p>Les premiers experts sont en cours de validation.</p><Link className="btn" href="/inscription?role=expert">Vous êtes expert IA ? Rejoignez-nous</Link></div>
+          <div className="empty"><p>Les premiers experts sont en cours de validation.</p><Link className="btn" href="/experts/rejoindre">Vous êtes expert IA ? Rejoignez-nous</Link></div>
         )}
       </section>
     </>

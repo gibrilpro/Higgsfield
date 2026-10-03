@@ -28,6 +28,9 @@ export type Mission = {
 
 export class MissionError extends Error {}
 
+/** Days after delivery before an unanswered mission is validated automatically (see CGU art. 6). */
+export const AUTO_VALIDATE_DAYS = 14;
+
 const SELECT = `SELECT m.*, c.name AS client_name, e.name AS expert_name FROM missions m
   JOIN users c ON c.id = m.client_id JOIN users e ON e.id = m.expert_id`;
 
@@ -181,4 +184,28 @@ export async function postMessage(m: Mission, u: User, body: string) {
   const text = body.trim();
   if (!text) return;
   await systemMessage(m.id, u.id, text.slice(0, 4000));
+}
+
+/** Validates delivered missions left unanswered for AUTO_VALIDATE_DAYS (lazy: runs when missions are viewed). */
+export async function autoValidateDue() {
+  const due = await query<Mission>("SELECT * FROM missions WHERE status = 'delivered' AND updated_at < ?", [now() - AUTO_VALIDATE_DAYS * 86400_000]);
+  for (const m of due) {
+    try {
+      await releaseToExpert(m, m.client_id, ["delivered"], `Validation automatique : aucune réponse du client ${AUTO_VALIDATE_DAYS} jours après la livraison. L'expert est payé.`);
+    } catch (e) {
+      if (!(e instanceof MissionError)) console.error("auto-validation", m.id, e);
+    }
+  }
+}
+
+export async function getReview(missionId: string) {
+  return one<{ rating: number; comment: string }>("SELECT rating, comment FROM reviews WHERE mission_id = ?", [missionId]);
+}
+
+export async function leaveReview(m: Mission, u: User, rating: number, comment: string) {
+  if (m.client_id !== u.id) throw new MissionError("Seul le client peut laisser un avis.");
+  if (m.status !== "completed") throw new MissionError("Vous pourrez laisser un avis une fois la mission terminée.");
+  if (!Number.isInteger(rating) || rating < 1 || rating > 5) throw new MissionError("Choisissez une note de 1 à 5.");
+  if (await getReview(m.id)) throw new MissionError("Vous avez déjà laissé un avis pour cette mission.");
+  await run("INSERT INTO reviews (mission_id, expert_id, client_id, rating, comment, created_at) VALUES (?, ?, ?, ?, ?, ?)", [m.id, m.expert_id, u.id, rating, comment.trim().slice(0, 1000), now()]);
 }

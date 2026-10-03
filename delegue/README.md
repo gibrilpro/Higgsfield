@@ -47,7 +47,7 @@ DATABASE_URL=file:./data/test.db ADMIN_EMAIL=admin@test.fr npx next start -p 310
 BASE=http://localhost:3100 npm run test:e2e
 ```
 
-Le test parcourt tout le cycle en mode démo : inscription expert, validation admin, diagnostic, commande, paiement, acceptation, messages, livraison, validation, contrôles d'accès et affichage mobile.
+Le test parcourt tout le cycle en mode démo : inscription expert, validation admin, diagnostic, commande, paiement, acceptation, messages, livraison, validation, avis, validation automatique après 14 jours, contrôles d'accès et affichage mobile. Passer `DATABASE_URL` au test pour activer la vérification de la validation automatique.
 
 ## Structure
 

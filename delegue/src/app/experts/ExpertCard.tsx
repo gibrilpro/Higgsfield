@@ -11,7 +11,7 @@ export function ExpertCard({ e }: { e: Expert }) {
       </div>
       <div className="row">
         <span className="verified"><Icon name="check" size={14} />Vérifié</span>
-        <span className="tiny mono">{e.missions_done} mission{e.missions_done > 1 ? "s" : ""} terminée{e.missions_done > 1 ? "s" : ""}</span>
+        <span className="tiny mono">{e.rating ? `★ ${e.rating.toFixed(1)} (${e.reviews_count} avis)` : "Nouveau"} · {e.missions_done} mission{e.missions_done > 1 ? "s" : ""}</span>
       </div>
       <div className="tools">{e.tools.map((t) => <span className="tool" key={t}>{t}</span>)}</div>
       <div className="row">
