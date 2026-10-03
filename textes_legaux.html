@@ -1,0 +1,145 @@
+<title>Textes légaux Novashop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Source+Sans+3:wght@400;600&display=swap">
+<style>
+/* Layout: one narrow column — "your info" form first, then one card per Shopify field, each with a copy button */
+:root{
+  --bg:#f3f5f4; --surface:#ffffff; --fg:#17201d; --muted:#5b6762; --line:#d9e0dc;
+  --accent:#0f6b5c; --accent-fg:#ffffff; --ok:#1d7a3e; --warn-bg:#fff4dc; --warn-fg:#7a5200;
+  --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body:"Source Sans 3", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#111715; --surface:#1a2320; --fg:#e7eeeb; --muted:#9aa8a2; --line:#2c3833;
+  --accent:#4cc2a8; --accent-fg:#06231d; --ok:#5fd18a; --warn-bg:#3a2e12; --warn-fg:#f3cf7a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111715; --surface:#1a2320; --fg:#e7eeeb; --muted:#9aa8a2; --line:#2c3833;
+  --accent:#4cc2a8; --accent-fg:#06231d; --ok:#5fd18a; --warn-bg:#3a2e12; --warn-fg:#f3cf7a; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:16px/1.55 var(--body);padding:28px 16px 64px}
+.wrap{max-width:720px;margin:0 auto;display:grid;gap:22px}
+h1{font:700 clamp(26px,5vw,34px)/1.15 var(--display);margin:0;text-wrap:balance}
+h2{font:600 20px/1.25 var(--display);margin:0}
+p{margin:0}
+.lead{color:var(--muted);max-width:60ch}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;display:grid;gap:14px;min-width:0}
+.form{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+label{display:grid;gap:4px;font-weight:600;font-size:14px}
+label span{font-weight:400;color:var(--muted);font-size:13px}
+input{font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);width:100%}
+input:focus-visible,button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.step{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.num{font:700 14px var(--display);background:var(--accent);color:var(--accent-fg);border-radius:999px;min-width:26px;height:26px;display:inline-grid;place-items:center}
+.where{color:var(--muted);font-size:15px}
+.where b{color:var(--fg)}
+.text{border:1px solid var(--line);border-radius:8px;padding:14px;max-height:240px;overflow:auto;font-size:14px;background:var(--bg);min-width:0}
+.text h3{font:600 15px var(--body);margin:12px 0 4px}
+.text h3:first-child{margin-top:0}
+.text p,.text li{margin:0 0 6px}
+.text ul{margin:0 0 6px;padding-left:20px}
+.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+button{font:600 16px var(--body);background:var(--accent);color:var(--accent-fg);border:0;border-radius:8px;padding:12px 22px;cursor:pointer}
+.status{color:var(--ok);font-weight:600}
+.warn{background:var(--warn-bg);color:var(--warn-fg);border-radius:8px;padding:10px 12px;font-size:14px}
+.done{color:var(--muted);font-size:14px}
+@media (prefers-reduced-motion:no-preference){button{transition:transform .1s}button:active{transform:scale(.97)}}
+</style>
+
+<div class="wrap">
+  <header style="display:grid;gap:8px">
+    <h1>Textes légaux Novashop</h1>
+    <p class="lead">Remplissez vos infos une fois. Ensuite, pour chaque case : touchez <b>Copier</b>, ouvrez la page indiquée dans Shopify, collez, puis <b>Enregistrer</b>.</p>
+  </header>
+
+  <section class="panel" aria-labelledby="t-infos">
+    <h2 id="t-infos">Vos informations</h2>
+    <div class="form">
+      <label for="f-nom">Nom et prénom <span>tel qu'inscrit à l'URSSAF</span><input id="f-nom" autocomplete="name" placeholder="Ex. : Jean Dupont"></label>
+      <label for="f-siret">Numéro SIRET <span>14 chiffres</span><input id="f-siret" inputmode="numeric" placeholder="Ex. : 123 456 789 00012"></label>
+      <label for="f-email">E-mail pour les clients<input id="f-email" type="email" autocomplete="email" placeholder="Ex. : contact@novashop.fr"></label>
+      <label for="f-tel">Téléphone <span>facultatif</span><input id="f-tel" type="tel" value="+33 6 83 16 73 62"></label>
+      <label for="f-adr">Adresse<input id="f-adr" value="4 Rue Joseph Haydn, 51100 Reims, France"></label>
+      <label for="f-med">Médiateur de la consommation <span>à remplir plus tard</span><input id="f-med" placeholder="Nom et site du médiateur"></label>
+    </div>
+    <p id="missing" class="warn" hidden></p>
+  </section>
+
+  <div id="cards" class="wrap" style="gap:22px"></div>
+
+  <section class="panel">
+    <h2>Les autres cases</h2>
+    <p class="done"><b>Politique de retour et de remboursement</b> et <b>Politique de confidentialité</b> sont déjà publiées : ne touchez à rien. <b>Conditions de service</b> est facultative : vous pouvez y recoller les conditions de vente, ou la laisser vide.</p>
+  </section>
+</div>
+
+<script>
+const ids=["nom","siret","email","tel","adr","med"];
+const $=id=>document.getElementById("f-"+id);
+try{ids.forEach(k=>{const v=localStorage.getItem("nova-"+k); if(v!==null) $(k).value=v;});}catch(e){}
+
+const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const v=k=>{const x=$(k).value.trim(); return x?esc(x):`[${{nom:"VOTRE NOM",siret:"VOTRE SIRET",email:"VOTRE E-MAIL",tel:"",adr:"VOTRE ADRESSE",med:""}[k]}]`;};
+
+const docs=[
+ {title:"Politique d'expédition", field:"Politique d'expédition", html:()=>`
+<h3>Expédition</h3><p>Toutes nos commandes sont expédiées avec un numéro de suivi. Vous recevez un e-mail avec votre lien de suivi dès que votre colis est en route.</p>
+<h3>Délai de préparation</h3><p>Les commandes sont préparées sous 1 à 3 jours ouvrés après validation du paiement.</p>
+<h3>Délais et tarifs de livraison</h3><ul><li>France et Union européenne : livraison offerte, 10 à 20 jours ouvrés.</li><li>Royaume-Uni, Suisse, États-Unis, Canada, Australie, Japon et autres pays desservis en priorité : 4,99 €, 12 à 25 jours ouvrés.</li><li>Reste du monde : 7,99 €, 15 à 30 jours ouvrés.</li></ul>
+<p>Les délais sont indicatifs et courent à partir de l'expédition. Ils peuvent être allongés en période de forte activité (fêtes, soldes) ou en cas de contrôle douanier. Nos produits sont expédiés depuis les entrepôts de nos partenaires, qui peuvent être situés hors de l'Union européenne.</p>
+<h3>Droits de douane et taxes</h3><p>Pour les livraisons hors de l'Union européenne, des droits de douane ou taxes d'importation peuvent être demandés par le pays de destination. Ces frais sont à la charge du destinataire.</p>
+<h3>Adresse de livraison</h3><p>Merci de vérifier votre adresse avant de valider la commande. Nous ne pouvons pas être tenus responsables d'un colis non livré en raison d'une adresse incorrecte ou incomplète.</p>
+<h3>Colis en retard, perdu ou endommagé</h3><p>Si votre colis n'est pas arrivé après le délai maximum indiqué, ou s'il arrive endommagé, contactez-nous à ${v("email")} avec votre numéro de commande. Nous vous proposerons un renvoi du produit ou un remboursement.</p>`},
+
+ {title:"Conditions de vente", field:"Conditions de vente", html:()=>`
+<h3>Article 1 – Vendeur</h3><p>La boutique Novashop est exploitée par ${v("nom")}, entrepreneur individuel (micro-entreprise), SIRET ${v("siret")}, ${v("adr")}. Contact : ${v("email")}.</p>
+<h3>Article 2 – Objet</h3><p>Les présentes conditions régissent les ventes réalisées sur la boutique Novashop. Toute commande implique leur acceptation.</p>
+<h3>Article 3 – Produits</h3><p>Les produits sont décrits avec la plus grande exactitude possible. Les photos sont non contractuelles ; de légères différences de teinte ou de finition peuvent exister.</p>
+<h3>Article 4 – Prix</h3><p>Les prix sont indiqués en euros. TVA non applicable, article 293 B du CGI. Les frais de livraison sont précisés avant la validation de la commande. Pour les livraisons hors Union européenne, des droits de douane peuvent s'ajouter, à la charge du client.</p>
+<h3>Article 5 – Commande et paiement</h3><p>La commande est validée après confirmation du paiement, effectué en ligne de manière sécurisée par les moyens proposés lors du paiement. Un e-mail de confirmation est envoyé au client.</p>
+<h3>Article 6 – Livraison</h3><p>Les délais et tarifs de livraison sont précisés dans notre Politique d'expédition. En cas de retard important, le client peut nous contacter pour trouver une solution.</p>
+<h3>Article 7 – Droit de rétractation</h3><p>Le client dispose de 14 jours à compter de la réception pour exercer son droit de rétractation, sans avoir à se justifier, selon les modalités de notre Politique de retour et de remboursement.</p>
+<h3>Article 8 – Garanties</h3><p>Les produits bénéficient de la garantie légale de conformité (articles L217-3 et suivants du Code de la consommation) et de la garantie des vices cachés (articles 1641 et suivants du Code civil).</p>
+<h3>Article 9 – Responsabilité</h3><p>Le vendeur ne saurait être tenu responsable d'une mauvaise utilisation du produit. Le pistolet de massage ne remplace pas un avis médical : en cas de doute (grossesse, problème de santé, blessure), consultez un professionnel de santé avant utilisation.</p>
+<h3>Article 10 – Données personnelles</h3><p>Les données collectées sont traitées conformément à notre Politique de confidentialité.</p>
+<h3>Article 11 – Litiges et médiation</h3><p>En cas de litige, le client peut contacter notre service client à ${v("email")}.${$("med").value.trim()?` À défaut de solution amiable, il peut recourir gratuitement au médiateur de la consommation suivant : ${esc($("med").value.trim())}.`:""} Les présentes conditions sont soumises au droit français.</p>`},
+
+ {title:"Mention légale", field:"Mention légale", html:()=>`
+<h3>Éditeur du site</h3><p>${v("nom")}, entrepreneur individuel (micro-entreprise)<br>SIRET : ${v("siret")}<br>Adresse : ${v("adr")}<br>E-mail : ${v("email")}${$("tel").value.trim()?`<br>Téléphone : ${v("tel")}`:""}<br>TVA non applicable, article 293 B du CGI.</p>
+<h3>Directeur de la publication</h3><p>${v("nom")}</p>
+<h3>Hébergeur</h3><p>Shopify International Limited<br>Victoria Buildings, 2e étage, 1-2 Haddington Road, Dublin 4, D04 XN32, Irlande<br>www.shopify.com</p>`},
+
+ {title:"Coordonnées", field:"Coordonnées", html:()=>`
+<p><b>Novashop</b><br>${v("nom")}, entrepreneur individuel<br>SIRET : ${v("siret")}<br>${v("adr")}<br>E-mail : ${v("email")}${$("tel").value.trim()?`<br>Téléphone : ${v("tel")}`:""}</p>`}
+];
+
+const cards=document.getElementById("cards");
+docs.forEach((d,i)=>{
+  const s=document.createElement("section"); s.className="panel";
+  s.innerHTML=`<div class="step"><span class="num">${i+1}</span><h2>${d.title}</h2></div>
+  <p class="where">Dans Shopify : <b>Paramètres → Politiques → ${d.field}</b></p>
+  <div class="text" id="t${i}"></div>
+  <div class="row"><button type="button" id="b${i}">Copier le texte</button><span class="status" id="s${i}" aria-live="polite"></span></div>`;
+  cards.appendChild(s);
+  s.querySelector("button").addEventListener("click",async()=>{
+    const box=document.getElementById("t"+i), html=box.innerHTML, plain=box.innerText, st=document.getElementById("s"+i);
+    try{
+      if(window.ClipboardItem&&navigator.clipboard.write){
+        await navigator.clipboard.write([new ClipboardItem({"text/html":new Blob([html],{type:"text/html"}),"text/plain":new Blob([plain],{type:"text/plain"})})]);
+      } else { await navigator.clipboard.writeText(plain); }
+      st.textContent="Copié ✓ Collez-le dans Shopify";
+    }catch(e){
+      const r=document.createRange(); r.selectNodeContents(box); const sel=getSelection(); sel.removeAllRanges(); sel.addRange(r);
+      st.textContent="Texte sélectionné : appuyez sur Copier dans le menu";
+    }
+  });
+});
+
+function render(){
+  docs.forEach((d,i)=>{document.getElementById("t"+i).innerHTML=d.html();document.getElementById("s"+i).textContent="";});
+  const miss=[["nom","votre nom"],["siret","votre SIRET"],["email","votre e-mail"]].filter(([k])=>!$(k).value.trim()).map(([,l])=>l);
+  const m=document.getElementById("missing");
+  m.hidden=!miss.length; m.textContent=miss.length?`Il manque ${miss.join(", ")} : remplissez-les avant de copier, sinon les textes contiendront des [crochets].`:"";
+}
+ids.forEach(k=>$(k).addEventListener("input",()=>{try{localStorage.setItem("nova-"+k,$(k).value)}catch(e){} render();}));
+render();
+</script>
