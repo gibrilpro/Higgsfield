@@ -1,0 +1,404 @@
+<title>Délègue</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;700;800&family=Geist:wght@400;500;600&family=Geist+Mono:wght@500&display=swap">
+<style>
+/* Layout: SaaS shell — sticky nav; home = diagnostic hero + how-it-works + catalogue/experts previews; inner pages in a 1160px column; dialogs as sheets. */
+:root{
+  --bg:#F6F7F9; --surface:#FFFFFF; --sunk:#EEF0F4; --ink:#0B1220; --muted:#566074; --line:#DFE3EA;
+  --accent:#E8912D; --accent-ink:#1A1206; --accent-soft:#FCEBD6; --brand:#0B1220; --brand-ink:#F6F7F9;
+  --ok:#0F766E; --ok-soft:#DDF3EF; --info:#2F5BD3; --info-soft:#E3EAFC;
+  --display:'Schibsted Grotesk', 'Geist', system-ui, sans-serif;
+  --body:'Geist', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono:'Geist Mono', ui-monospace, Menlo, monospace;
+  --r:12px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0A0E16; --surface:#121826; --sunk:#0E1420; --ink:#E9EDF5; --muted:#97A1B5; --line:#232C3D;
+  --accent:#F2A74B; --accent-ink:#1A1206; --accent-soft:#3A2911; --brand:#E9EDF5; --brand-ink:#0A0E16;
+  --ok:#3CC7B5; --ok-soft:#10302C; --info:#86A6FF; --info-soft:#18233F; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0A0E16; --surface:#121826; --sunk:#0E1420; --ink:#E9EDF5; --muted:#97A1B5; --line:#232C3D;
+  --accent:#F2A74B; --accent-ink:#1A1206; --accent-soft:#3A2911; --brand:#E9EDF5; --brand-ink:#0A0E16;
+  --ok:#3CC7B5; --ok-soft:#10302C; --info:#86A6FF; --info-soft:#18233F; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{background:var(--bg)}
+body{color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.55;padding-inline:16px;padding-block:0 56px;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--display);line-height:1.08;text-wrap:balance;margin:0;letter-spacing:-.02em}
+p{margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1160px;margin-inline:auto}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+/* nav */
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);margin-inline:-16px;padding:12px 16px;border-bottom:1px solid var(--line)}
+.nav .in{max-width:1160px;margin-inline:auto;display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.logo{font-family:var(--display);font-weight:800;font-size:22px;letter-spacing:-.03em;display:flex;align-items:baseline;gap:1px;border:0;background:none;padding:0}
+.logo i{font-style:normal;color:var(--accent)}
+.links{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;flex:1;min-width:0}
+.links button{border:0;background:none;padding:8px 10px;border-radius:8px;font-weight:500;color:var(--muted);white-space:nowrap}
+.links button[aria-current="page"]{color:var(--ink);background:var(--sunk)}
+.badge-proto{font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:3px 7px;white-space:nowrap}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px 16px;font-weight:600;white-space:nowrap}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+.btn.accent{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:none}
+.btn.sm{padding:7px 12px;font-size:14px}
+.btn:disabled{opacity:.55;cursor:progress}
+
+/* home */
+.hero{padding-block:56px 40px;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:48px;align-items:center}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.hero h1{font-size:clamp(36px,5.4vw,62px);font-weight:800;margin-top:14px}
+.hero h1 em{font-style:normal;background:linear-gradient(transparent 62%,var(--accent-soft) 62%)}
+.hero .lede{font-size:18px;color:var(--muted);margin-top:16px;max-width:52ch}
+.diag{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 1px 0 var(--line),0 18px 40px -24px color-mix(in srgb,var(--ink) 35%,transparent);display:flex;flex-direction:column;gap:12px}
+.diag label{font-weight:600}
+.diag textarea{min-height:110px}
+.ex-chips{display:flex;gap:6px;flex-wrap:wrap}
+.ex-chips button{border:1px dashed var(--line);background:none;border-radius:999px;padding:5px 10px;font-size:13px;color:var(--muted)}
+.ex-chips button:hover{color:var(--ink);border-style:solid}
+.diag .foot{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.tiny{font-size:12.5px;color:var(--muted)}
+.trust{display:flex;gap:22px;flex-wrap:wrap;margin-top:26px;color:var(--muted);font-size:14px}
+.trust span{display:flex;align-items:center;gap:7px}
+.trust svg{flex:none}
+section.block{padding-block:40px;border-top:1px solid var(--line)}
+.sec-head{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+.sec-head h2{font-size:clamp(24px,3vw,34px);font-weight:700}
+.sec-head p{color:var(--muted);margin-top:6px;max-width:60ch}
+.steps3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px;display:flex;flex-direction:column;gap:8px}
+.step .n{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.step h3{font-size:19px}
+.step p{color:var(--muted);font-size:14.5px}
+.sample-note{font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);background:var(--sunk);border-radius:5px;padding:3px 7px}
+
+/* cards */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.card h3{font-size:18px}
+.card .desc{color:var(--muted);font-size:14.5px}
+.kpis{display:flex;gap:18px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.kpis b{display:block;color:var(--ink);font-family:var(--mono);font-weight:500;font-size:15px}
+.cat{font-size:12px;font-weight:600;color:var(--info);background:var(--info-soft);border-radius:6px;padding:3px 8px;align-self:flex-start}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.price{font-family:var(--mono);font-size:17px}
+.price small{font-family:var(--body);color:var(--muted);font-size:13px}
+.who{display:flex;gap:12px;align-items:center;min-width:0}
+.av{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-weight:700;color:#fff;flex:none;font-size:15px}
+.verified{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--ok);font-weight:600}
+.tools{display:flex;gap:6px;flex-wrap:wrap}
+.tool{font-family:var(--mono);font-size:11.5px;border:1px solid var(--line);border-radius:6px;padding:2px 7px;color:var(--muted)}
+.filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px;font-size:14px;font-weight:500}
+.chip[aria-pressed="true"]{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+
+/* result */
+.page-head{padding-block:36px 20px}
+.page-head h1{font-size:clamp(28px,4vw,42px);font-weight:800}
+.page-head p{color:var(--muted);margin-top:8px;max-width:64ch}
+.result{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:16px;align-items:start}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.quote{border-left:3px solid var(--accent);padding-left:12px;color:var(--muted);font-style:italic}
+.flow{display:flex;align-items:stretch;gap:0;flex-wrap:wrap}
+.flow .node{flex:1 1 150px;background:var(--sunk);border:1px solid var(--line);border-radius:10px;padding:12px;min-width:0}
+.flow .node span{display:block;font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:4px}
+.flow .node.ai{background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 45%,var(--line))}
+.flow .arrow{display:grid;place-items:center;width:28px;color:var(--muted);flex:none}
+.big{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.big div{background:var(--sunk);border-radius:10px;padding:12px}
+.big b{display:block;font-family:var(--mono);font-size:22px;font-weight:500}
+.big span{font-size:12.5px;color:var(--muted)}
+.thinking{display:flex;align-items:center;gap:10px;color:var(--muted)}
+.spin{width:16px;height:16px;border-radius:50%;border:2px solid var(--line);border-top-color:var(--accent)}
+@media (prefers-reduced-motion:no-preference){.spin{animation:sp 0.8s linear infinite}}
+@keyframes sp{to{transform:rotate(360deg)}}
+.src{font-family:var(--mono);font-size:11px;color:var(--muted)}
+
+/* missions */
+.list{display:flex;flex-direction:column;gap:12px}
+.status{font-size:12px;font-weight:600;border-radius:999px;padding:4px 10px;white-space:nowrap}
+.s-go{background:var(--info-soft);color:var(--info)}
+.s-ok{background:var(--ok-soft);color:var(--ok)}
+.s-wait{background:var(--accent-soft);color:color-mix(in srgb,var(--accent) 60%,var(--ink))}
+.track{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.track div{font-size:12.5px;color:var(--muted);border-top:3px solid var(--line);padding-top:6px}
+.track div.on{color:var(--ink);border-top-color:var(--accent);font-weight:600}
+.money{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;background:var(--sunk);border-radius:10px;padding:12px}
+.money span{display:block;font-size:12px;color:var(--muted)}
+.money b{font-family:var(--mono);font-weight:500}
+
+/* forms */
+form.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.f{display:flex;flex-direction:column;gap:6px;min-width:0}
+.f.full{grid-column:1/-1}
+.f label{font-weight:600;font-size:13.5px}
+input,select,textarea{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%}
+textarea{resize:vertical;min-height:90px}
+.empty{background:var(--surface);border:1px dashed var(--line);border-radius:var(--r);padding:32px;text-align:center;color:var(--muted)}
+.sheet{position:fixed;inset:0;background:color-mix(in srgb,#000 50%,transparent);display:grid;place-items:center;padding:16px;z-index:30}
+.sheet>div{background:var(--surface);border-radius:18px;max-width:560px;width:100%;max-height:90vh;overflow:auto;padding:24px;display:flex;flex-direction:column;gap:14px}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-weight:600;z-index:40;max-width:calc(100% - 32px)}
+.note{font-size:13px;color:var(--muted);background:var(--sunk);border-radius:10px;padding:10px 12px}
+footer{border-top:1px solid var(--line);margin-top:40px;padding-top:20px;color:var(--muted);font-size:13px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+@media (max-width:820px){.hero{grid-template-columns:1fr;gap:28px;padding-block:32px 28px}.result{grid-template-columns:1fr}.steps3{grid-template-columns:1fr}form.grid2{grid-template-columns:1fr}.big b{font-size:18px}.flow .arrow{transform:rotate(90deg);width:100%;height:22px}.flow .node{flex-basis:100%}}
+</style>
+
+<header class="nav">
+  <div class="in">
+    <button class="logo" id="home-link" aria-label="Accueil">délègue<i>.</i></button>
+    <nav class="links" id="links" aria-label="Navigation"></nav>
+    <span class="badge-proto">Prototype</span>
+  </div>
+</header>
+<main class="wrap" id="view"></main>
+<div class="wrap"><footer><span>délègue. · Prototype de démonstration : profils, solutions et paiements sont simulés.</span><span class="mono">Commission plateforme : 15 %</span></footer></div>
+<div id="sheet" class="sheet" hidden></div>
+<div id="toast" class="toast" hidden role="status"></div>
+
+<script>
+const COMMISSION=0.15;
+const CATS=['Messages clients','Rendez-vous','Avis & réputation','Devis & admin','Réseaux sociaux','E-commerce','Téléphone'];
+const CATALOG=[
+  {id:'k1',cat:'Messages clients',title:'Assistant de réponses Instagram & WhatsApp',desc:'Répond aux questions fréquentes (prix, horaires, livraison) 24 h/24 et vous transmet les demandes importantes.',price:490,monthly:29,days:5,hours:8,tools:['ManyChat','API Claude','Make']},
+  {id:'k2',cat:'Rendez-vous',title:'Réservation automatique',desc:'Vos clients réservent seuls, reçoivent un rappel la veille, et les annulations libèrent le créneau.',price:390,monthly:0,days:4,hours:5,tools:['Cal.com','Google Agenda','Twilio']},
+  {id:'k3',cat:'Avis & réputation',title:'Réponses aux avis Google',desc:'Chaque nouvel avis reçoit une réponse personnalisée, validée par vous en un clic.',price:190,monthly:15,days:2,hours:2,tools:['Google Business','API Claude','n8n']},
+  {id:'k4',cat:'Devis & admin',title:'Devis générés en 2 minutes',desc:'Le client remplit un formulaire, l\'IA prépare le devis au bon format, vous n\'avez qu\'à vérifier et envoyer.',price:590,monthly:0,days:6,hours:6,tools:['Tally','Google Docs','n8n']},
+  {id:'k5',cat:'Réseaux sociaux',title:'Posts du mois préparés par l\'IA',desc:'Un calendrier de 12 posts par mois, rédigés dans votre ton, prêts à valider et à programmer.',price:290,monthly:49,days:3,hours:4,tools:['Notion','API Claude','Buffer']},
+  {id:'k6',cat:'E-commerce',title:'SAV e-commerce automatisé',desc:'Suivi de colis, retours et questions produits traités automatiquement depuis votre boutique Shopify.',price:690,monthly:39,days:7,hours:10,tools:['Shopify','Gorgias','API Claude']},
+  {id:'k7',cat:'E-commerce',title:'Fiches produits rédigées par l\'IA',desc:'Titres, descriptions et textes SEO générés pour tout votre catalogue, dans votre style.',price:250,monthly:0,days:3,hours:3,tools:['Shopify','API Claude']},
+  {id:'k8',cat:'Téléphone',title:'Standard téléphonique IA',desc:'Un assistant vocal répond aux appels, prend les messages et les rendez-vous quand vous êtes occupé.',price:890,monthly:59,days:8,hours:7,tools:['Vapi','Twilio','Cal.com']}
+];
+const EXPERTS=[
+  {id:'e1',name:'Thomas L.',city:'Lyon',title:'Automatisations pour commerces',skills:['Messages clients','Rendez-vous'],tools:['Make','ManyChat','API Claude'],rate:55,missions:41,rating:4.9},
+  {id:'e2',name:'Amira S.',city:'Paris',title:'IA pour boutiques en ligne',skills:['E-commerce','Messages clients'],tools:['Shopify','Gorgias','n8n'],rate:65,missions:58,rating:5.0},
+  {id:'e3',name:'Julien P.',city:'Reims',title:'Assistants vocaux et téléphonie',skills:['Téléphone','Rendez-vous'],tools:['Vapi','Twilio','Cal.com'],rate:70,missions:23,rating:4.8},
+  {id:'e4',name:'Sarah B.',city:'Nantes',title:'Contenu et réseaux sociaux',skills:['Réseaux sociaux','Avis & réputation'],tools:['Notion','Buffer','API Claude'],rate:45,missions:37,rating:4.9},
+  {id:'e5',name:'Karim D.',city:'Toulouse',title:'Devis, factures et back-office',skills:['Devis & admin'],tools:['n8n','Google Workspace','Pennylane'],rate:60,missions:29,rating:4.7},
+  {id:'e6',name:'Chloé M.',city:'Bordeaux',title:'Réputation en ligne',skills:['Avis & réputation','Réseaux sociaux'],tools:['Google Business','Make','API Claude'],rate:50,missions:33,rating:4.8}
+];
+const EXAMPLES_TXT=[
+  'Je passe 2 h par jour à répondre aux mêmes questions sur Instagram',
+  'Mes clients m\'appellent pour prendre rendez-vous pendant que je travaille',
+  'Faire mes devis me prend toutes mes soirées',
+  'Je n\'ai pas le temps de répondre aux avis Google'
+];
+const TEMPLATES=[
+  {k:/messag|instagram|whatsapp|dm|répond|question|facebook|mail/i,cat:'Messages clients',titre:'Assistant de réponses automatiques',resume:'Un assistant IA répond aux questions fréquentes de vos clients à votre place, dans votre ton, et vous transmet uniquement les demandes qui ont besoin de vous.',etapes:['Un client envoie un message','L\'IA comprend la question et cherche la réponse dans vos infos','Réponse envoyée, ou transfert vers vous si c\'est important'],outils:['ManyChat','API Claude','Make'],h:8,min:400,max:700,d:5},
+  {k:/rendez|rdv|réserv|agenda|planning|appel/i,cat:'Rendez-vous',titre:'Prise de rendez-vous automatique',resume:'Vos clients réservent eux-mêmes un créneau libre, reçoivent une confirmation et un rappel, sans que vous ayez à décrocher.',etapes:['Le client choisit un créneau en ligne ou par message','L\'agenda se met à jour tout seul','Rappel envoyé la veille, annulations gérées'],outils:['Cal.com','Google Agenda','Twilio'],h:5,min:300,max:600,d:4},
+  {k:/devis|factur|compta|admin|paperasse/i,cat:'Devis & admin',titre:'Devis préparés automatiquement',resume:'Le client décrit son besoin dans un formulaire, l\'IA prépare un devis complet au bon format. Vous vérifiez et envoyez en deux clics.',etapes:['Le client remplit un formulaire simple','L\'IA calcule et rédige le devis','Vous validez, le devis part par e-mail'],outils:['Tally','n8n','Google Docs'],h:6,min:450,max:900,d:6},
+  {k:/avis|google|note|réputation/i,cat:'Avis & réputation',titre:'Réponses aux avis Google',resume:'Chaque nouvel avis reçoit une réponse personnalisée préparée par l\'IA, que vous validez en un clic.',etapes:['Un nouvel avis arrive','L\'IA rédige une réponse adaptée','Vous validez, la réponse est publiée'],outils:['Google Business','API Claude','n8n'],h:2,min:150,max:300,d:2},
+  {k:/post|réseau|contenu|tiktok|publication|linkedin/i,cat:'Réseaux sociaux',titre:'Contenus réseaux sociaux préparés par l\'IA',resume:'Chaque mois, un calendrier de posts rédigés dans votre ton, avec les visuels proposés, prêt à valider et programmer.',etapes:['L\'IA analyse votre activité et vos anciens posts','Elle prépare le calendrier du mois','Vous validez, les posts sont programmés'],outils:['Notion','API Claude','Buffer'],h:4,min:250,max:500,d:3},
+  {k:/command|colis|shopify|boutique|produit|stock|retour|livraison/i,cat:'E-commerce',titre:'SAV e-commerce automatisé',resume:'Les questions sur les commandes, le suivi de colis et les retours sont traitées automatiquement à partir des données de votre boutique.',etapes:['Un client demande où en est sa commande','L\'IA retrouve la commande et le suivi','Réponse envoyée avec le lien de suivi'],outils:['Shopify','Gorgias','API Claude'],h:10,min:500,max:900,d:7},
+  {k:/téléphon|standard|répondeur/i,cat:'Téléphone',titre:'Standard téléphonique IA',resume:'Un assistant vocal décroche quand vous êtes occupé, répond aux questions simples, prend les messages et les rendez-vous.',etapes:['Un client appelle','L\'assistant vocal répond et comprend la demande','Message ou rendez-vous enregistré, vous êtes prévenu'],outils:['Vapi','Twilio','Cal.com'],h:7,min:700,max:1200,d:8}
+];
+const STEPS=['Cadrage','Installation','Tests','Livrée'];
+
+// ---- state ----
+const KEY='delegue-proto-v1';
+let S=load();
+function load(){const b={page:'home',cat:'Toutes',missions:[],expert:null,diag:null};try{const r=localStorage.getItem(KEY);if(r)return Object.assign(b,JSON.parse(r));}catch(e){}return b;}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+const uid=()=>Math.random().toString(36).slice(2,9);
+const eur=n=>Math.round(n).toLocaleString('fr-FR')+' €';
+const allExperts=()=>[...(S.expert?[S.expert]:[]),...EXPERTS];
+
+function h(tag,attrs={},...kids){
+  const el=document.createElement(tag);
+  for(const [k,v] of Object.entries(attrs||{})){
+    if(k==='class')el.className=v; else if(k.startsWith('on'))el.addEventListener(k.slice(2),v);
+    else if(v===true)el.setAttribute(k,''); else if(v!==false&&v!=null)el.setAttribute(k,v);
+  }
+  for(const k of kids.flat()){if(k==null||k===false)continue;el.append(k.nodeType?k:document.createTextNode(String(k)));}
+  return el;
+}
+function svg(path,size=16){const s=document.createElementNS('http://www.w3.org/2000/svg','svg');s.setAttribute('width',size);s.setAttribute('height',size);s.setAttribute('viewBox','0 0 24 24');s.setAttribute('fill','none');s.setAttribute('stroke','currentColor');s.setAttribute('stroke-width','2');s.setAttribute('stroke-linecap','round');s.setAttribute('stroke-linejoin','round');s.setAttribute('aria-hidden','true');s.innerHTML=path;return s;}
+const I={check:'<path d="M20 6 9 17l-5-5"/>',lock:'<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',shield:'<path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',arrow:'<path d="M5 12h14M13 6l6 6-6 6"/>',spark:'<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/>'};
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>t.hidden=true,2600);}
+function avatar(p){const pal=[['#0B1220','#3B4A66'],['#0F766E','#3CC7B5'],['#2F5BD3','#86A6FF'],['#B4532A','#E8912D'],['#6D28D9','#A78BFA'],['#9F1239','#FB7185']];const c=pal[[...p.id].reduce((a,ch)=>a+ch.charCodeAt(0),0)%pal.length];return h('div',{class:'av',style:`background:linear-gradient(140deg,${c[0]},${c[1]})`,'aria-hidden':'true'},p.name.split(' ').map(s=>s[0]).join('').slice(0,2).toUpperCase());}
+
+// ---- nav ----
+const PAGES=[['home','Accueil'],['catalog','Solutions'],['experts','Experts'],['missions','Mes missions'],['become','Devenir expert']];
+function go(p){S.page=p;save();render();window.scrollTo({top:0});}
+document.getElementById('home-link').onclick=()=>go('home');
+function render(){
+  const L=document.getElementById('links');L.replaceChildren();
+  for(const [id,label] of PAGES)L.append(h('button',{'aria-current':S.page===id||(S.page==='result'&&id==='home')?'page':false,onclick:()=>go(id)},label+(id==='missions'&&S.missions.length?` (${S.missions.length})`:'')));
+  const v=document.getElementById('view');v.replaceChildren();
+  ({home:vHome,result:vResult,catalog:vCatalog,experts:vExperts,missions:vMissions,become:vBecome})[S.page](v);
+}
+
+// ---- AI diagnostic ----
+let samplePromise=(async()=>{try{return window.claude?await window.claude.use('sample'):null;}catch(e){return null;}})();
+function fallbackDiag(text){
+  const t=TEMPLATES.find(x=>x.k.test(text));
+  if(t)return {titre:t.titre,resume:t.resume,etapes:t.etapes,outils:t.outils,heures_gagnees_semaine:t.h,prix_min:t.min,prix_max:t.max,delai_jours:t.d,categorie:t.cat,source:'modele'};
+  return {titre:'Audit IA et automatisation sur mesure',resume:'Un expert analyse votre façon de travailler pendant un appel de 45 minutes, identifie les tâches à automatiser en priorité et installe la première automatisation.',etapes:['Appel de diagnostic avec un expert','Choix de la tâche qui fait gagner le plus de temps','Installation et formation'],outils:['Make','API Claude'],heures_gagnees_semaine:4,prix_min:300,prix_max:800,delai_jours:7,categorie:'Devis & admin',source:'modele'};
+}
+async function runDiag(text,btn,out){
+  btn.disabled=true;
+  out.replaceChildren(h('div',{class:'thinking'},h('span',{class:'spin','aria-hidden':'true'}),'Analyse de votre besoin…'));
+  let res=null;
+  const sample=await samplePromise;
+  if(sample){
+    try{
+      const prompt=`Tu es le moteur de diagnostic d'une plateforme française qui met en relation des petites entreprises avec des experts en automatisation et en IA.
+Un commerçant ou un indépendant décrit une tâche qui lui fait perdre du temps. Propose UNE solution concrète d'automatisation avec l'IA qu'un expert freelance peut installer.
+Réponds uniquement avec un objet JSON de cette forme :
+{"titre": string (6 mots max), "resume": string (2 phrases simples, vouvoiement, sans jargon), "etapes": [3 courtes étapes du fonctionnement : déclencheur, ce que fait l'IA, résultat], "outils": [2 à 4 noms d'outils réels], "heures_gagnees_semaine": nombre réaliste, "prix_min": nombre en euros, "prix_max": nombre en euros (installation par un freelance en France, entre 150 et 2000), "delai_jours": nombre, "categorie": une valeur parmi ${JSON.stringify(CATS)}}
+Si la demande n'a rien à voir avec une tâche professionnelle, propose un audit IA général.
+Description du commerçant : """${text.slice(0,1500)}"""`;
+      const j=await sample.json(prompt,{modelTier:'quick'});
+      if(j&&typeof j.titre==='string'&&Array.isArray(j.etapes)&&j.etapes.length){
+        res={titre:String(j.titre),resume:String(j.resume||''),etapes:j.etapes.slice(0,4).map(String),outils:(Array.isArray(j.outils)?j.outils:[]).slice(0,4).map(String),
+          heures_gagnees_semaine:Math.max(1,Math.round(+j.heures_gagnees_semaine||3)),prix_min:Math.max(100,Math.round(+j.prix_min||300)),prix_max:Math.max(150,Math.round(+j.prix_max||700)),
+          delai_jours:Math.max(1,Math.round(+j.delai_jours||5)),categorie:CATS.includes(j.categorie)?j.categorie:fallbackDiag(text).categorie,source:'ia'};
+        if(res.prix_max<res.prix_min)[res.prix_min,res.prix_max]=[res.prix_max,res.prix_min];
+      }
+    }catch(e){/* not granted, rate limited, invalid json… → template below */}
+  }
+  if(!res)res=fallbackDiag(text);
+  S.diag={...res,demande:text,at:Date.now()};save();btn.disabled=false;go('result');
+}
+
+// ---- pages ----
+function vHome(v){
+  const ta=h('textarea',{id:'need',placeholder:'Ex. : je passe mes soirées à répondre aux messages de mes clients…','aria-describedby':'need-hint'});
+  const out=h('div',{'aria-live':'polite'});
+  const btn=h('button',{class:'btn accent',type:'submit'},svg(I.spark),'Trouver ma solution');
+  const form=h('form',{class:'diag',onsubmit:e=>{e.preventDefault();const t=ta.value.trim();if(t.length<8){ta.focus();toast('Décrivez votre tâche en une phrase');return;}runDiag(t,btn,out);}},
+    h('label',{for:'need'},'Quelle tâche vous fait perdre du temps ?'),ta,
+    h('div',{class:'ex-chips'},EXAMPLES_TXT.map(x=>h('button',{type:'button',onclick:()=>{ta.value=x;ta.focus();}},x))),
+    h('div',{class:'foot'},h('span',{class:'tiny',id:'need-hint'},'Diagnostic gratuit, en quelques secondes.'),btn),out);
+  v.append(h('section',{class:'hero'},
+    h('div',{},
+      h('div',{class:'eyebrow'},'Automatisation & IA pour les indépendants'),
+      h('h1',{},'Confiez vos tâches répétitives à l\'IA. ',h('em',{},'Un expert l\'installe pour vous.')),
+      h('p',{class:'lede'},'Décrivez ce qui vous fait perdre du temps. Nous vous proposons une solution concrète, son prix, et un expert vérifié pour la mettre en place dans votre entreprise.'),
+      h('div',{class:'trust'},
+        h('span',{},svg(I.lock),'Paiement bloqué jusqu\'à la livraison'),
+        h('span',{},svg(I.shield),'Experts vérifiés'),
+        h('span',{},svg(I.clock),'Installé en quelques jours'))),
+    form));
+  v.append(h('section',{class:'block'},
+    h('div',{class:'sec-head'},h('div',{},h('h2',{},'Comment ça marche'),h('p',{},'Trois étapes, sans jargon technique.'))),
+    h('div',{class:'steps3'},
+      [['1','Décrivez votre problème','L\'IA le transforme en besoin clair : la solution, les outils, le temps gagné et le prix indicatif.'],
+       ['2','Choisissez un expert','Comparez les experts spécialisés dans votre besoin, leurs notes et leurs tarifs. Le paiement est bloqué en sécurité.'],
+       ['3','Gagnez du temps','L\'expert installe et teste la solution avec vous. Il est payé quand tout fonctionne.']]
+      .map(([n,t,d])=>h('div',{class:'step'},h('span',{class:'n'},'Étape '+n),h('h3',{},t),h('p',{},d))))));
+  v.append(h('section',{class:'block'},
+    h('div',{class:'sec-head'},h('div',{},h('h2',{},'Solutions prêtes à installer'),h('p',{},'Prix fixe, délai connu. Les plus demandées par les commerçants et les indépendants.')),h('div',{class:'row'},h('span',{class:'sample-note'},'Exemples'),h('button',{class:'btn sm',onclick:()=>go('catalog')},'Tout voir'))),
+    h('div',{class:'grid'},CATALOG.slice(0,3).map(solutionCard))));
+  v.append(h('section',{class:'block'},
+    h('div',{class:'sec-head'},h('div',{},h('h2',{},'Des experts vérifiés'),h('p',{},'Chaque expert passe un entretien et un test pratique avant d\'être visible.')),h('div',{class:'row'},h('span',{class:'sample-note'},'Profils d\'exemple'),h('button',{class:'btn sm',onclick:()=>go('experts')},'Voir les experts'))),
+    h('div',{class:'grid'},allExperts().slice(0,3).map(expertCard))));
+}
+function solutionCard(k){
+  return h('article',{class:'card'},
+    h('span',{class:'cat'},k.cat),h('h3',{},k.title),h('p',{class:'desc'},k.desc),
+    h('div',{class:'kpis'},h('span',{},h('b',{},'~'+k.hours+' h'),'gagnées / sem.'),h('span',{},h('b',{},k.days+' j'),'d\'installation')),
+    h('div',{class:'tools'},k.tools.map(t=>h('span',{class:'tool'},t))),
+    h('div',{class:'row'},h('div',{class:'price'},eur(k.price),k.monthly?h('small',{},' + '+k.monthly+' €/mois'):h('small',{},' une fois')),h('button',{class:'btn primary sm',onclick:()=>startMission({titre:k.title,categorie:k.cat,prix:k.price,delai:k.days,source:'catalogue'})},'Commander')));
+}
+function expertCard(e){
+  return h('article',{class:'card'},
+    h('div',{class:'who'},avatar(e),h('div',{style:'min-width:0'},h('h3',{},e.name),h('div',{class:'tiny'},e.title+' · '+e.city))),
+    h('div',{class:'row'},h('span',{class:'verified'},svg(I.check,14),e.mine?'En cours de vérification':'Vérifié'),h('span',{class:'tiny mono'},(e.rating?('★ '+e.rating.toFixed(1)):'Nouveau')+' · '+(e.missions||0)+' missions')),
+    h('div',{class:'tools'},e.tools.map(t=>h('span',{class:'tool'},t))),
+    h('div',{class:'row'},h('div',{class:'price'},e.rate+' €',h('small',{},' / heure')),h('button',{class:'btn sm',onclick:()=>startMission({titre:'Mission sur mesure',categorie:e.skills[0],prix:e.rate*8,delai:5,expertId:e.id,source:'expert'})},'Contacter')));
+}
+function vResult(v){
+  const d=S.diag; if(!d){go('home');return;}
+  const avg=Math.round((d.prix_min+d.prix_max)/2);
+  const experts=allExperts().filter(e=>e.skills.includes(d.categorie)).slice(0,3);
+  const flow=h('div',{class:'flow'});
+  d.etapes.forEach((s,i)=>{if(i)flow.append(h('div',{class:'arrow'},svg(I.arrow)));flow.append(h('div',{class:'node'+(i===1?' ai':'')},h('span',{},i===0?'Déclencheur':i===d.etapes.length-1?'Résultat':'IA'),s));});
+  v.append(h('div',{class:'page-head'},h('div',{class:'eyebrow'},'Votre diagnostic'),h('h1',{},d.titre),h('p',{class:'quote'},'« '+d.demande+' »')));
+  v.append(h('div',{class:'result'},
+    h('div',{class:'panel'},
+      h('p',{},d.resume),
+      h('div',{},h('div',{class:'eyebrow',style:'margin-bottom:8px'},'Comment ça fonctionne'),flow),
+      h('div',{class:'big'},
+        h('div',{},h('b',{},'~'+d.heures_gagnees_semaine+' h'),h('span',{},'gagnées par semaine')),
+        h('div',{},h('b',{},Math.round(d.prix_min).toLocaleString('fr-FR')+'–'+eur(d.prix_max)),h('span',{},'installation, prix indicatif')),
+        h('div',{},h('b',{},d.delai_jours+' j'),h('span',{},'délai moyen'))),
+      h('div',{class:'tools'},d.outils.map(t=>h('span',{class:'tool'},t))),
+      h('div',{class:'row'},h('span',{class:'src'},d.source==='ia'?'Diagnostic généré par IA · à confirmer avec l\'expert':'Estimation à partir de solutions similaires · à confirmer avec l\'expert'),
+        h('div',{class:'row'},h('button',{class:'btn ghost',onclick:()=>go('home')},'Modifier ma demande'),h('button',{class:'btn accent',onclick:()=>startMission({titre:d.titre,categorie:d.categorie,prix:avg,delai:d.delai_jours,brief:d.demande,source:'diagnostic'})},'Lancer la mission')))),
+    h('div',{class:'panel'},
+      h('h2',{style:'font-size:20px'},'Experts recommandés'),
+      experts.length?experts.map(e=>h('div',{class:'row',style:'border-top:1px solid var(--line);padding-top:12px'},h('div',{class:'who'},avatar(e),h('div',{},h('b',{},e.name),h('div',{class:'tiny'},(e.rating?'★ '+e.rating.toFixed(1)+' · ':'')+e.rate+' €/h'))),h('button',{class:'btn sm',onclick:()=>startMission({titre:d.titre,categorie:d.categorie,prix:avg,delai:d.delai_jours,brief:d.demande,expertId:e.id,source:'diagnostic'})},'Choisir'))):h('p',{class:'tiny'},'Aucun expert dans cette catégorie pour l\'instant : nous vous en trouvons un.'),
+      h('p',{class:'note'},'Le prix final est fixé avec l\'expert avant le paiement. L\'argent reste bloqué jusqu\'à ce que la solution fonctionne.'))));
+}
+function vCatalog(v){
+  v.append(h('div',{class:'page-head'},h('div',{class:'eyebrow'},'Catalogue'),h('h1',{},'Solutions prêtes à installer'),h('p',{},'Des automatisations testées, à prix fixe. Un expert les adapte à votre entreprise.')));
+  const f=h('div',{class:'filters',role:'group','aria-label':'Catégorie'});
+  for(const c of ['Toutes',...CATS])f.append(h('button',{class:'chip','aria-pressed':S.cat===c,onclick:()=>{S.cat=c;save();render();}},c));
+  v.append(f,h('div',{class:'grid'},CATALOG.filter(k=>S.cat==='Toutes'||k.cat===S.cat).map(solutionCard)));
+}
+function vExperts(v){
+  v.append(h('div',{class:'page-head'},h('div',{class:'eyebrow'},'Experts'),h('h1',{},'Des experts IA vérifiés'),h('p',{},'Ils installent les automatisations et vous forment à les utiliser. Profils d\'exemple dans ce prototype.')));
+  v.append(h('div',{class:'grid'},allExperts().map(expertCard)));
+}
+function startMission(m){
+  const sh=document.getElementById('sheet');
+  const ex=m.expertId?allExperts().find(e=>e.id===m.expertId):(allExperts().find(e=>e.skills.includes(m.categorie))||EXPERTS[0]);
+  const brief=h('textarea',{id:'m-brief',placeholder:'Votre activité, les outils que vous utilisez déjà, ce que vous attendez…'},m.brief||'');
+  const close=()=>{sh.hidden=true;sh.replaceChildren();};
+  sh.replaceChildren(h('div',{role:'dialog','aria-modal':'true','aria-label':'Lancer la mission'},
+    h('div',{class:'eyebrow'},'Nouvelle mission'),h('h2',{style:'font-size:24px'},m.titre),
+    h('div',{class:'who'},avatar(ex),h('div',{},h('b',{},ex.name),h('div',{class:'tiny'},ex.title))),
+    h('div',{class:'f'},h('label',{for:'m-brief'},'Précisions pour l\'expert'),brief),
+    h('div',{class:'money'},h('div',{},h('span',{},'Vous payez'),h('b',{},eur(m.prix))),h('div',{},h('span',{},'L\'expert reçoit'),h('b',{},eur(m.prix*(1-COMMISSION)))),h('div',{},h('span',{},'Délai'),h('b',{},m.delai+' jours'))),
+    h('p',{class:'note'},'Prototype : le paiement est simulé. Dans la vraie version, il passe par Stripe et reste bloqué jusqu\'à votre validation.'),
+    h('div',{class:'row'},h('button',{class:'btn ghost',onclick:close},'Annuler'),h('button',{class:'btn primary',onclick:()=>{
+      S.missions.unshift({id:uid(),titre:m.titre,categorie:m.categorie,prix:m.prix,delai:m.delai,expertId:ex.id,expertName:ex.name,brief:brief.value.trim(),step:0,created:Date.now()});
+      save();close();go('missions');toast('Mission lancée avec '+ex.name);}},svg(I.lock),'Payer et lancer'))));
+  sh.hidden=false;brief.focus();sh.onclick=e=>{if(e.target===sh)close();};
+}
+function vMissions(v){
+  v.append(h('div',{class:'page-head'},h('div',{class:'eyebrow'},'Tableau de bord'),h('h1',{},'Mes missions'),h('p',{},'Suivez chaque installation, du cadrage jusqu\'à la livraison.')));
+  if(!S.missions.length){v.append(h('div',{class:'empty'},h('p',{},'Aucune mission pour l\'instant.'),h('p',{style:'margin-top:12px'},h('button',{class:'btn accent',onclick:()=>go('home')},'Faire mon diagnostic gratuit'))));return;}
+  const saved=S.missions.filter(m=>m.step===3).length;
+  v.append(h('div',{class:'big',style:'margin-bottom:16px'},
+    h('div',{},h('b',{},S.missions.length),h('span',{},'missions')),
+    h('div',{},h('b',{},saved),h('span',{},'livrées')),
+    h('div',{},h('b',{},eur(S.missions.filter(m=>m.step<3).reduce((a,m)=>a+m.prix,0))),h('span',{},'bloqués en sécurité'))));
+  v.append(h('div',{class:'list'},S.missions.map(m=>{
+    const cls=m.step===3?'s-ok':m.step===2?'s-wait':'s-go';
+    return h('article',{class:'card'},
+      h('div',{class:'row'},h('div',{style:'min-width:0'},h('h3',{},m.titre),h('div',{class:'tiny'},'avec '+m.expertName+' · '+m.categorie)),h('span',{class:'status '+cls},STEPS[m.step])),
+      h('div',{class:'track'},STEPS.map((s,i)=>h('div',{class:i<=m.step?'on':''},s))),
+      h('div',{class:'money'},h('div',{},h('span',{},'Montant'),h('b',{},eur(m.prix))),h('div',{},h('span',{},'Expert'),h('b',{},eur(m.prix*(1-COMMISSION)))),h('div',{},h('span',{},m.step===3?'Paiement':'Statut'),h('b',{},m.step===3?'versé':'bloqué'))),
+      m.brief?h('p',{class:'tiny'},'Précisions : '+m.brief):null,
+      m.step<3?h('div',{class:'row'},h('span',{class:'tiny'},m.step===2?'L\'expert attend votre validation.':'Démo : faites avancer la mission.'),
+        h('button',{class:'btn '+(m.step===2?'accent':'')+' sm',onclick:()=>{m.step++;save();render();toast(m.step===3?'Mission validée, expert payé':STEPS[m.step]);}},m.step===2?'Valider et payer l\'expert':'Étape suivante (démo)')):null);
+  })));
+}
+function vBecome(v){
+  v.append(h('div',{class:'page-head'},h('div',{class:'eyebrow'},'Pour les freelances'),h('h1',{},'Devenez expert délègue.'),h('p',{},'Recevez des missions qualifiées : le client a déjà décrit son besoin et connaît le prix indicatif. Vous gardez 85 % de chaque mission.')));
+  const p=S.expert||{};
+  const F=(id,l,el,full)=>h('div',{class:'f'+(full?' full':'')},h('label',{for:id},l),el);
+  const name=h('input',{id:'b-name',required:true,value:p.name||'',placeholder:'Prénom et initiale'});
+  const city=h('input',{id:'b-city',value:p.city||'',placeholder:'Ville'});
+  const title=h('input',{id:'b-title',required:true,value:p.title||'',placeholder:'Ex. : automatisations pour restaurants'});
+  const rate=h('input',{id:'b-rate',type:'number',min:'20',value:String(p.rate||50)});
+  const tools=h('input',{id:'b-tools',value:(p.tools||[]).join(', '),placeholder:'Make, n8n, API Claude…'});
+  const chosen=new Set(p.skills||[]);
+  const chips=h('div',{class:'filters',role:'group','aria-label':'Spécialités'},CATS.map(c=>{const b=h('button',{type:'button',class:'chip','aria-pressed':chosen.has(c)},c);b.onclick=()=>{chosen.has(c)?chosen.delete(c):chosen.add(c);b.setAttribute('aria-pressed',chosen.has(c));};return b;}));
+  v.append(h('div',{class:'panel',style:'max-width:780px'},h('form',{class:'grid2',onsubmit:e=>{e.preventDefault();if(!chosen.size){toast('Choisissez au moins une spécialité');return;}
+      S.expert={id:p.id||'me-'+uid(),name:name.value.trim(),city:city.value.trim()||'France',title:title.value.trim(),rate:+rate.value||50,tools:tools.value.split(',').map(s=>s.trim()).filter(Boolean).slice(0,5),skills:[...chosen],missions:0,rating:null,mine:true};
+      save();toast('Candidature enregistrée');go('experts');}},
+    F('b-name','Nom affiché',name),F('b-city','Ville',city),F('b-title','Votre spécialité en une phrase',title,true),F('b-rate','Tarif horaire (€)',rate),F('b-tools','Outils maîtrisés',tools),
+    h('div',{class:'f full'},h('label',{},'Catégories de missions'),chips),
+    h('p',{class:'note f full'},'Dans la vraie version : entretien, test pratique et vérification d\'identité avant d\'apparaître dans les résultats.'),
+    h('div',{class:'f full'},h('button',{class:'btn primary'},S.expert?'Mettre à jour mon profil':'Envoyer ma candidature')))));
+}
+render();
+</script>
