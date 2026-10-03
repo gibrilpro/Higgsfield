@@ -1,0 +1,350 @@
+<title>Rushs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: app shell — sticky top bar with role switch, tab row, content column (max 1120px), modal sheets for profile/order. */
+:root{
+  --bg:#F2F3F7; --surface:#FFFFFF; --ink:#15161C; --muted:#5D6070; --line:#E1E3EB;
+  --accent:#4B3FE0; --accent-ink:#FFFFFF; --accent-soft:#E9E7FD; --rec:#E5484D;
+  --ok:#1F8A5B; --ok-soft:#E3F4EC; --warn:#A76A00; --warn-soft:#FBF0DA;
+  --display:'Bricolage Grotesque', 'Figtree', system-ui, sans-serif;
+  --body:'Figtree', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono:'JetBrains Mono', ui-monospace, Menlo, monospace;
+  --r:14px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#101116; --surface:#181A21; --ink:#ECEDF3; --muted:#9A9DAD; --line:#2A2D38;
+  --accent:#8C82FF; --accent-ink:#0E0E14; --accent-soft:#25234A; --rec:#FF6369;
+  --ok:#4CC38A; --ok-soft:#173327; --warn:#F0B44C; --warn-soft:#3A2D12; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#101116; --surface:#181A21; --ink:#ECEDF3; --muted:#9A9DAD; --line:#2A2D38;
+  --accent:#8C82FF; --accent-ink:#0E0E14; --accent-soft:#25234A; --rec:#FF6369;
+  --ok:#4CC38A; --ok-soft:#173327; --warn:#F0B44C; --warn-soft:#3A2D12; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{background:var(--bg)}
+body{color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;padding-inline:16px;padding-block:0 48px}
+h1,h2,h3{font-family:var(--display);line-height:1.1;text-wrap:balance;margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1120px;margin-inline:auto}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);margin-inline:-16px;padding:14px 16px 0;border-bottom:1px solid var(--line)}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.logo{font-family:var(--display);font-weight:800;font-size:26px;letter-spacing:-.5px;display:flex;align-items:center;gap:8px}
+.dot{width:11px;height:11px;border-radius:50%;background:var(--rec);box-shadow:0 0 0 4px color-mix(in srgb,var(--rec) 20%,transparent)}
+@media (prefers-reduced-motion:no-preference){.dot{animation:blink 1.6s ease-in-out infinite}}
+@keyframes blink{50%{opacity:.35}}
+.proto{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:2px 6px}
+.role{display:flex;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:3px}
+.role button{border:0;background:none;padding:7px 14px;border-radius:999px;font-weight:600;color:var(--muted)}
+.role button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.tabs{display:flex;gap:4px;overflow-x:auto;margin-top:12px;scrollbar-width:none}
+.tabs button{border:0;background:none;padding:10px 12px;font-weight:600;color:var(--muted);border-bottom:2px solid transparent;white-space:nowrap}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+.count{font-family:var(--mono);font-size:11px;background:var(--accent-soft);color:var(--accent);border-radius:6px;padding:1px 6px;margin-left:4px}
+main{padding-top:24px}
+.hero{display:grid;grid-template-columns:1.4fr 1fr;gap:24px;align-items:end;margin-bottom:24px}
+.hero h1{font-size:clamp(30px,5vw,48px);font-weight:800;letter-spacing:-1px}
+.hero p{color:var(--muted);margin:10px 0 0;max-width:60ch}
+.stats{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:10px 14px;min-width:0}
+.stat b{display:block;font-family:var(--mono);font-size:18px}
+.stat span{font-size:12px;color:var(--muted)}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px;font-weight:500;font-size:14px}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.who{display:flex;gap:12px;align-items:center;min-width:0}
+.av{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;font-family:var(--display);font-weight:700;color:#fff;flex:none}
+.who h3{font-size:17px}
+.sub{color:var(--muted);font-size:13px}
+.tags{display:flex;gap:6px;flex-wrap:wrap}
+.tag{font-size:12px;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:2px 8px}
+.ex{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--warn);background:var(--warn-soft);border-radius:4px;padding:1px 5px;margin-left:auto;align-self:flex-start}
+.reel{display:flex;gap:6px}
+.reel i{flex:1;aspect-ratio:9/16;border-radius:8px;background:linear-gradient(160deg,var(--c1),var(--c2));position:relative;max-width:100%}
+.reel i::after{content:"9:16";position:absolute;left:6px;bottom:5px;font:500 9px var(--mono);color:#fff;opacity:.85}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.price{font-family:var(--mono);font-size:15px}
+.price small{color:var(--muted);font-family:var(--body)}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:9px 14px;font-weight:600}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:none}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.list{display:flex;flex-direction:column;gap:12px}
+.mission h3{font-size:19px}
+.meta{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.meta b{color:var(--ink);font-family:var(--mono);font-weight:500}
+.status{font-size:12px;font-weight:600;border-radius:999px;padding:3px 10px;white-space:nowrap}
+.s-wait{background:var(--warn-soft);color:var(--warn)}
+.s-go{background:var(--accent-soft);color:var(--accent)}
+.s-ok{background:var(--ok-soft);color:var(--ok)}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.steps div{font-size:12px;color:var(--muted);border-top:3px solid var(--line);padding-top:6px}
+.steps div.on{color:var(--ink);border-top-color:var(--accent);font-weight:600}
+.money{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;background:var(--bg);border-radius:10px;padding:10px 12px}
+.money span{display:block;font-size:12px;color:var(--muted)}
+.money b{font-family:var(--mono);font-weight:500}
+form.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:760px}
+.f{display:flex;flex-direction:column;gap:6px;min-width:0}
+.f.full{grid-column:1/-1}
+label{font-weight:600;font-size:13px}
+input,select,textarea{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%}
+textarea{min-height:90px;resize:vertical}
+.hint{font-size:12px;color:var(--muted)}
+.empty{background:var(--surface);border:1px dashed var(--line);border-radius:var(--r);padding:28px;text-align:center;color:var(--muted)}
+.sheet{position:fixed;inset:0;background:color-mix(in srgb,#000 45%,transparent);display:grid;place-items:center;padding:16px;z-index:20}
+.sheet>div{background:var(--surface);border-radius:18px;max-width:560px;width:100%;max-height:90vh;overflow:auto;padding:22px;display:flex;flex-direction:column;gap:14px}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-weight:600;z-index:30;max-width:calc(100% - 32px)}
+.note{font-size:13px;color:var(--muted);border-left:3px solid var(--accent);padding-left:10px}
+h2.sec{font-size:24px;margin-bottom:6px}
+p.lead{color:var(--muted);margin:0 0 16px}
+@media (max-width:720px){.hero{grid-template-columns:1fr}.stats{justify-content:flex-start}form.panel{grid-template-columns:1fr}.steps div{font-size:11px}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="bar">
+      <div class="logo"><span class="dot" aria-hidden="true"></span>rushs <span class="proto">prototype</span></div>
+      <div class="role" role="group" aria-label="Je suis">
+        <span class="sub" style="align-self:center;padding:0 8px 0 10px">Je suis</span>
+        <button id="r-brand" aria-pressed="true">Marque</button>
+        <button id="r-creator" aria-pressed="false">Créateur</button>
+      </div>
+    </div>
+    <nav class="tabs" role="tablist" id="tabs"></nav>
+  </header>
+  <main id="view"></main>
+</div>
+<div id="sheet" class="sheet" hidden></div>
+<div id="toast" class="toast" hidden role="status"></div>
+
+<script>
+const COMMISSION = 0.15;
+const NICHES = ['Beauté','Bien-être','Sport','Tech','Maison','Mode','Cuisine'];
+const PALETTE = [['#4B3FE0','#9D8CFF'],['#E5484D','#FF9A6B'],['#1F8A5B','#7BD3A6'],['#C2410C','#F5B04C'],['#0E7490','#67D3E8'],['#9D174D','#F472B6']];
+
+const EXAMPLES = {
+  creators: [
+    {id:'c1',name:'Inès M.',city:'Lyon',niches:['Beauté','Bien-être'],price:90,days:5,style:'Face caméra, ton naturel, voix off',videos:38,rating:4.9,ex:true},
+    {id:'c2',name:'Yanis B.',city:'Marseille',niches:['Sport','Tech'],price:110,days:4,style:'Démos produit dynamiques, unboxing',videos:52,rating:4.8,ex:true},
+    {id:'c3',name:'Clara D.',city:'Paris',niches:['Maison','Cuisine'],price:75,days:6,style:'Ambiance cosy, plans mains, ASMR',videos:21,rating:4.7,ex:true},
+    {id:'c4',name:'Sofiane K.',city:'Lille',niches:['Tech','Mode'],price:130,days:3,style:'Avis face caméra, humour',videos:64,rating:4.9,ex:true},
+    {id:'c5',name:'Léa R.',city:'Bordeaux',niches:['Bien-être','Sport'],price:85,days:5,style:'Routine du matin, lifestyle',videos:29,rating:4.8,ex:true},
+    {id:'c6',name:'Mehdi A.',city:'Reims',niches:['Mode','Beauté'],price:95,days:4,style:'Try-on, transitions rapides',videos:33,rating:4.6,ex:true}
+  ],
+  missions: [
+    {id:'m1',brand:'Boutique bien-être',product:'Mini pistolet de massage',niche:'Bien-être',budget:100,count:2,format:'9:16 · 15 s',deadline:'7 jours',brief:'Montrer la taille compacte et une utilisation sur la nuque après le travail. Accroche dans les 2 premières secondes.',ex:true,applicants:3},
+    {id:'m2',brand:'Marque de skincare',product:'Sérum vitamine C',niche:'Beauté',budget:120,count:1,format:'9:16 · 20 s',deadline:'10 jours',brief:'Routine du matin face caméra, texture en gros plan. Pas de promesse médicale.',ex:true,applicants:5},
+    {id:'m3',brand:'Accessoires sport',product:'Bandes de résistance',niche:'Sport',budget:90,count:3,format:'9:16 · 15 s',deadline:'5 jours',brief:'3 exercices rapides à la maison, rythme soutenu, texte à l\'écran.',ex:true,applicants:1}
+  ]
+};
+
+// ---- state (per-viewer, browser storage; works without it) ----
+const KEY='rushs-proto-v1';
+let S = load();
+function load(){
+  const base={role:'brand',tab:'creators',niche:'Tous',creators:[],missions:[],orders:[],applications:[],myProfile:null};
+  try{const raw=localStorage.getItem(KEY); if(raw) return Object.assign(base,JSON.parse(raw));}catch(e){}
+  return base;
+}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+const allCreators=()=>[...(S.myProfile?[S.myProfile]:[]),...S.creators,...EXAMPLES.creators];
+const allMissions=()=>[...S.missions,...EXAMPLES.missions];
+const uid=()=>Math.random().toString(36).slice(2,9);
+const eur=n=>n.toLocaleString('fr-FR',{minimumFractionDigits:0,maximumFractionDigits:2})+' €';
+
+// ---- tiny DOM helper ----
+function h(tag,attrs={},...kids){
+  const el=document.createElement(tag);
+  for(const [k,v] of Object.entries(attrs||{})){
+    if(k==='class') el.className=v;
+    else if(k.startsWith('on')) el.addEventListener(k.slice(2),v);
+    else if(v===true) el.setAttribute(k,'');
+    else if(v!==false && v!=null) el.setAttribute(k,v);
+  }
+  for(const k of kids.flat()){ if(k==null||k===false) continue; el.append(k.nodeType?k:document.createTextNode(String(k))); }
+  return el;
+}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>t.hidden=true,2600);}
+function avatar(c){const i=(c.name||'?').split(' ').map(s=>s[0]).join('').slice(0,2).toUpperCase();const p=PALETTE[[...c.id].reduce((a,ch)=>a+ch.charCodeAt(0),0)%PALETTE.length];return h('div',{class:'av',style:`background:linear-gradient(140deg,${p[0]},${p[1]})`,'aria-hidden':'true'},i);}
+function reel(c){const p=PALETTE[[...c.id].reduce((a,ch)=>a+ch.charCodeAt(0),0)%PALETTE.length];return h('div',{class:'reel','aria-hidden':'true'},[0,1,2].map(n=>h('i',{style:`--c1:${p[n%2]};--c2:${p[(n+1)%2]}`})));}
+
+// ---- tabs per role ----
+const TABS={
+  brand:[['creators','Trouver un créateur'],['post','Publier un brief'],['orders','Mes commandes']],
+  creator:[['missions','Missions ouvertes'],['profile','Mon profil'],['orders','Mes commandes']]
+};
+function setRole(r){S.role=r;S.tab=TABS[r][0][0];save();render();}
+document.getElementById('r-brand').onclick=()=>setRole('brand');
+document.getElementById('r-creator').onclick=()=>setRole('creator');
+
+function render(){
+  document.getElementById('r-brand').setAttribute('aria-pressed',S.role==='brand');
+  document.getElementById('r-creator').setAttribute('aria-pressed',S.role==='creator');
+  if(!TABS[S.role].some(t=>t[0]===S.tab)) S.tab=TABS[S.role][0][0];
+  const tabs=document.getElementById('tabs'); tabs.replaceChildren();
+  for(const [id,label] of TABS[S.role]){
+    const n=id==='orders'?myOrders().length:0;
+    tabs.append(h('button',{role:'tab','aria-selected':S.tab===id,onclick:()=>{S.tab=id;save();render();}},label,n?h('span',{class:'count'},n):null));
+  }
+  const v=document.getElementById('view'); v.replaceChildren();
+  ({creators:viewCreators,post:viewPost,orders:viewOrders,missions:viewMissions,profile:viewProfile})[S.tab](v);
+}
+function myOrders(){return S.role==='brand'?S.orders:S.orders.filter(o=>S.myProfile&&o.creatorId===S.myProfile.id);}
+
+// ---- brand: browse creators ----
+function viewCreators(v){
+  const list=allCreators();
+  v.append(h('section',{class:'hero'},
+    h('div',{},h('h1',{},'Des vidéos UGC pour vos pubs, livrées en quelques jours.'),
+      h('p',{},'Choisissez un créateur, envoyez votre brief, payez en sécurité. Le créateur est payé quand vous validez la vidéo.')),
+    h('div',{class:'stats'},
+      h('div',{class:'stat'},h('b',{},list.length),h('span',{},'créateurs')),
+      h('div',{class:'stat'},h('b',{},'dès '+eur(Math.min(...list.map(c=>c.price)))),h('span',{},'par vidéo')),
+      h('div',{class:'stat'},h('b',{},'3 à 6 j'),h('span',{},'de délai')))
+  ));
+  const f=h('div',{class:'filters',role:'group','aria-label':'Filtrer par thème'});
+  for(const n of ['Tous',...NICHES]) f.append(h('button',{class:'chip','aria-pressed':S.niche===n,onclick:()=>{S.niche=n;save();render();}},n));
+  v.append(f);
+  const shown=list.filter(c=>S.niche==='Tous'||c.niches.includes(S.niche));
+  if(!shown.length){v.append(h('div',{class:'empty'},'Aucun créateur dans ce thème pour l\'instant.'));return;}
+  v.append(h('div',{class:'grid'},shown.map(c=>h('article',{class:'card'},
+    h('div',{class:'who'},avatar(c),h('div',{style:'min-width:0'},h('h3',{},c.name),h('div',{class:'sub'},`${c.city} · ★ ${c.rating??'nouveau'} · ${c.videos??0} vidéos`)),c.ex?h('span',{class:'ex'},'Exemple'):null),
+    reel(c),
+    h('div',{class:'tags'},c.niches.map(n=>h('span',{class:'tag'},n))),
+    h('div',{class:'sub'},c.style),
+    h('div',{class:'row'},h('div',{class:'price'},eur(c.price),h('small',{},' / vidéo · '+c.days+' j')),h('button',{class:'btn primary',onclick:()=>orderSheet(c)},'Commander'))
+  ))));
+}
+
+// ---- order sheet ----
+function orderSheet(c){
+  const sh=document.getElementById('sheet');
+  const qty=h('input',{id:'o-qty',type:'number',min:'1',max:'10',value:'1'});
+  const product=h('input',{id:'o-product',placeholder:'Ex. : mini pistolet de massage',required:true});
+  const brief=h('textarea',{id:'o-brief',placeholder:'Ce que la vidéo doit montrer, l\'accroche, ce qu\'il faut éviter…',required:true});
+  const sum=h('div',{class:'money'});
+  const upd=()=>{const q=Math.max(1,+qty.value||1),t=c.price*q;sum.replaceChildren(
+    h('div',{},h('span',{},'Vous payez'),h('b',{},eur(t))),
+    h('div',{},h('span',{},'Créateur reçoit'),h('b',{},eur(t*(1-COMMISSION)))),
+    h('div',{},h('span',{},'Commission Rushs'),h('b',{},eur(t*COMMISSION))));};
+  qty.oninput=upd; upd();
+  const form=h('form',{class:'list',onsubmit:e=>{e.preventDefault();
+      const q=Math.max(1,+qty.value||1);
+      S.orders.unshift({id:uid(),creatorId:c.id,creatorName:c.name,product:product.value.trim(),brief:brief.value.trim(),qty:q,total:c.price*q,step:0,created:Date.now()});
+      save();close();S.tab='orders';render();toast('Commande envoyée à '+c.name);}},
+    h('div',{class:'f'},h('label',{for:'o-product'},'Produit'),product),
+    h('div',{class:'f'},h('label',{for:'o-brief'},'Brief'),brief),
+    h('div',{class:'f'},h('label',{for:'o-qty'},'Nombre de vidéos'),qty),
+    sum,
+    h('p',{class:'note'},'Prototype : le paiement est simulé. Dans la vraie version, l\'argent est bloqué jusqu\'à ce que vous validiez la vidéo.'),
+    h('div',{class:'row'},h('button',{type:'button',class:'btn ghost',onclick:close},'Annuler'),h('button',{class:'btn primary'},'Payer et envoyer le brief')));
+  sh.replaceChildren(h('div',{role:'dialog','aria-modal':'true','aria-label':'Commander à '+c.name},
+    h('div',{class:'who'},avatar(c),h('div',{},h('h2',{style:'font-size:22px'},'Commander à '+c.name),h('div',{class:'sub'},eur(c.price)+' par vidéo · livraison en '+c.days+' jours'))),form));
+  sh.hidden=false; product.focus();
+  function close(){sh.hidden=true;sh.replaceChildren();}
+  sh.onclick=e=>{if(e.target===sh) close();};
+}
+
+// ---- orders (both roles) ----
+const STEPS=['Brief envoyé','En tournage','Vidéo livrée','Validée et payée'];
+function viewOrders(v){
+  v.append(h('h2',{class:'sec'},'Mes commandes'),h('p',{class:'lead'},S.role==='brand'?'Suivez chaque vidéo, du brief jusqu\'au paiement du créateur.':'Les vidéos que des marques vous ont commandées.'));
+  const list=myOrders();
+  if(!list.length){v.append(h('div',{class:'empty'},S.role==='brand'?'Aucune commande. Choisissez un créateur dans « Trouver un créateur » pour envoyer votre premier brief.':'Aucune commande pour l\'instant. Postulez à une mission ou complétez votre profil pour être visible.'));return;}
+  v.append(h('div',{class:'list'},list.map(o=>{
+    const cls=o.step===3?'s-ok':o.step===2?'s-wait':'s-go';
+    let action=null;
+    if(S.role==='creator'&&o.step===0) action=h('button',{class:'btn primary',onclick:()=>adv(o)},'Accepter et commencer le tournage');
+    if(S.role==='creator'&&o.step===1) action=h('button',{class:'btn primary',onclick:()=>adv(o)},'Livrer la vidéo');
+    if(S.role==='brand'&&o.step===2) action=h('button',{class:'btn primary',onclick:()=>adv(o)},'Valider et payer le créateur');
+    if(S.role==='brand'&&o.step<2) action=h('button',{class:'btn',onclick:()=>adv(o),title:'Simule l\'action du créateur'},'Simuler l\'étape du créateur');
+    if(S.role==='creator'&&o.step===2) action=h('span',{class:'sub'},'En attente de validation par la marque');
+    return h('article',{class:'card'},
+      h('div',{class:'row'},h('div',{},h('h3',{style:'font-size:18px'},o.product),h('div',{class:'sub'},`${o.qty} vidéo${o.qty>1?'s':''} · ${S.role==='brand'?'avec '+o.creatorName:'pour '+(o.brand||'une marque')}`)),h('span',{class:'status '+cls},STEPS[o.step])),
+      h('div',{class:'steps'},STEPS.map((s,i)=>h('div',{class:i<=o.step?'on':''},s))),
+      h('div',{class:'money'},
+        h('div',{},h('span',{},'Total'),h('b',{},eur(o.total))),
+        h('div',{},h('span',{},'Créateur'),h('b',{},eur(o.total*(1-COMMISSION)))),
+        h('div',{},h('span',{},o.step===3?'Versé':'Bloqué'),h('b',{},o.step===3?'oui':'en sécurité'))),
+      o.brief?h('div',{class:'sub'},'Brief : '+o.brief):null,
+      action?h('div',{class:'row'},h('span'),action):null);
+  })));
+  function adv(o){o.step=Math.min(3,o.step+1);save();render();toast(STEPS[o.step]);}
+}
+
+// ---- brand: post a brief ----
+function viewPost(v){
+  v.append(h('h2',{class:'sec'},'Publier un brief'),h('p',{class:'lead'},'Les créateurs du thème choisi le voient et postulent avec leur prix.'));
+  const F=(id,label,el,full)=>h('div',{class:'f'+(full?' full':'')},h('label',{for:id},label),el);
+  const brand=h('input',{id:'p-brand',required:true,placeholder:'Nom de votre boutique'});
+  const product=h('input',{id:'p-product',required:true,placeholder:'Produit à mettre en avant'});
+  const niche=h('select',{id:'p-niche'},NICHES.map(n=>h('option',{},n)));
+  const budget=h('input',{id:'p-budget',type:'number',min:'20',value:'100',required:true});
+  const count=h('input',{id:'p-count',type:'number',min:'1',max:'20',value:'1'});
+  const format=h('select',{id:'p-format'},['9:16 · 15 s','9:16 · 30 s','1:1 · 15 s','4:5 · photo'].map(n=>h('option',{},n)));
+  const brief=h('textarea',{id:'p-brief',required:true,placeholder:'Ce que la vidéo doit montrer, le ton, l\'accroche, ce qu\'il faut éviter'});
+  v.append(h('form',{class:'panel',onsubmit:e=>{e.preventDefault();
+      S.missions.unshift({id:uid(),brand:brand.value.trim(),product:product.value.trim(),niche:niche.value,budget:+budget.value,count:+count.value||1,format:format.value,deadline:'7 jours',brief:brief.value.trim(),applicants:0,mine:true});
+      save();toast('Brief publié');S.role='creator';S.tab='missions';render();}},
+    F('p-brand','Boutique',brand),F('p-product','Produit',product),F('p-niche','Thème',niche),F('p-format','Format',format),
+    F('p-budget','Budget par vidéo (€)',budget),F('p-count','Nombre de vidéos',count),F('p-brief','Brief',brief,true),
+    h('p',{class:'hint f full'},'Après publication, la vue passe côté créateur pour que vous voyiez votre brief comme eux.'),
+    h('div',{class:'f full'},h('button',{class:'btn primary'},'Publier le brief'))));
+}
+
+// ---- creator: missions ----
+function viewMissions(v){
+  v.append(h('h2',{class:'sec'},'Missions ouvertes'),h('p',{class:'lead'},'Des marques cherchent des vidéos. Postulez avec votre prix et un mot pour la marque.'));
+  const list=allMissions();
+  v.append(h('div',{class:'list'},list.map(m=>{
+    const applied=S.applications.find(a=>a.missionId===m.id);
+    return h('article',{class:'card mission'},
+      h('div',{class:'row'},h('div',{style:'min-width:0'},h('h3',{},m.product),h('div',{class:'sub'},m.brand+(m.mine?' · votre brief':''))),m.ex?h('span',{class:'ex'},'Exemple'):h('span',{class:'tag'},m.niche)),
+      h('div',{class:'meta'},h('span',{},'Budget ',h('b',{},eur(m.budget)),' / vidéo'),h('span',{},'Vidéos ',h('b',{},m.count)),h('span',{},'Format ',h('b',{},m.format)),h('span',{},'Délai ',h('b',{},m.deadline)),h('span',{},'Candidats ',h('b',{},m.applicants+(applied?1:0)))),
+      h('div',{class:'sub'},m.brief),
+      h('div',{class:'row'},h('span'),applied?h('span',{class:'status s-go'},'Candidature envoyée · '+eur(applied.price)):h('button',{class:'btn primary',onclick:()=>applySheet(m)},'Postuler')));
+  })));
+}
+function applySheet(m){
+  const sh=document.getElementById('sheet');
+  const price=h('input',{id:'a-price',type:'number',min:'10',value:String(m.budget)});
+  const msg=h('textarea',{id:'a-msg',required:true,placeholder:'Pourquoi vous ? Votre idée d\'accroche, votre délai…'});
+  const close=()=>{sh.hidden=true;sh.replaceChildren();};
+  sh.replaceChildren(h('div',{role:'dialog','aria-modal':'true','aria-label':'Postuler'},
+    h('h2',{style:'font-size:22px'},'Postuler : '+m.product),h('div',{class:'sub'},m.brand+' · budget '+eur(m.budget)+' par vidéo'),
+    h('form',{class:'list',onsubmit:e=>{e.preventDefault();S.applications.push({id:uid(),missionId:m.id,price:+price.value,msg:msg.value.trim()});save();close();render();toast('Candidature envoyée');}},
+      h('div',{class:'f'},h('label',{for:'a-price'},'Votre prix par vidéo (€)'),price),
+      h('div',{class:'f'},h('label',{for:'a-msg'},'Message à la marque'),msg),
+      h('p',{class:'note'},'Vous recevez votre prix moins la commission de '+Math.round(COMMISSION*100)+' %, versé quand la marque valide la vidéo.'),
+      h('div',{class:'row'},h('button',{type:'button',class:'btn ghost',onclick:close},'Annuler'),h('button',{class:'btn primary'},'Envoyer ma candidature')))));
+  sh.hidden=false; msg.focus(); sh.onclick=e=>{if(e.target===sh) close();};
+}
+
+// ---- creator: profile ----
+function viewProfile(v){
+  const p=S.myProfile||{};
+  v.append(h('h2',{class:'sec'},'Mon profil créateur'),h('p',{class:'lead'},'Votre vitrine : les marques vous trouvent par thème et vous commandent directement.'));
+  const F=(id,label,el,full)=>h('div',{class:'f'+(full?' full':'')},h('label',{for:id},label),el);
+  const name=h('input',{id:'pr-name',required:true,value:p.name||'',placeholder:'Prénom et initiale'});
+  const city=h('input',{id:'pr-city',value:p.city||'',placeholder:'Ville'});
+  const price=h('input',{id:'pr-price',type:'number',min:'10',value:String(p.price||80)});
+  const days=h('input',{id:'pr-days',type:'number',min:'1',max:'30',value:String(p.days||5)});
+  const style=h('input',{id:'pr-style',value:p.style||'',placeholder:'Ex. : face caméra, démos produit, voix off'});
+  const chosen=new Set(p.niches||[]);
+  const chips=h('div',{class:'filters',role:'group','aria-label':'Thèmes'},NICHES.map(n=>{const b=h('button',{type:'button',class:'chip','aria-pressed':chosen.has(n)},n);b.onclick=()=>{chosen.has(n)?chosen.delete(n):chosen.add(n);b.setAttribute('aria-pressed',chosen.has(n));};return b;}));
+  v.append(h('form',{class:'panel',onsubmit:e=>{e.preventDefault();
+      if(!chosen.size){toast('Choisissez au moins un thème');return;}
+      S.myProfile={id:p.id||'me-'+uid(),name:name.value.trim(),city:city.value.trim()||'France',price:+price.value,days:+days.value,style:style.value.trim()||'Vidéos UGC',niches:[...chosen],videos:0,rating:null};
+      save();toast('Profil enregistré, visible côté marques');render();}},
+    F('pr-name','Nom affiché',name),F('pr-city','Ville',city),F('pr-price','Prix par vidéo (€)',price),F('pr-days','Délai de livraison (jours)',days),F('pr-style','Votre style',style,true),
+    h('div',{class:'f full'},h('label',{},'Thèmes'),chips),
+    h('div',{class:'f full'},h('button',{class:'btn primary'},S.myProfile?'Mettre à jour mon profil':'Créer mon profil'))));
+  if(S.myProfile) v.append(h('p',{class:'note',style:'margin-top:16px'},'Passez en mode « Je suis une marque » pour voir votre profil dans la liste des créateurs.'));
+}
+
+render();
+</script>
