@@ -2,7 +2,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
 <style>
-/* Layout: single 760px column — header with day counter + progress, phase tabs, week cards of daily checkboxes; a side "offre & outils" section at the end. */
+/* Layout: single 760px column (agence en sous-traitance) — header with day counter + progress, phase tabs, week cards of daily checkboxes; a side "offre & outils" section at the end. */
 :root{
   --bg:#F3F5F2; --surface:#FFFFFF; --sunk:#E9EDE7; --ink:#121A14; --muted:#57635A; --line:#D9DFD6;
   --accent:#2F6B4F; --accent-ink:#FFFFFF; --accent-soft:#DCEBE2; --gold:#B7791F; --gold-soft:#F7ECD8;
@@ -52,15 +52,23 @@ label.task input:checked ~ .t{color:var(--muted);text-decoration:line-through}
 ul.plain{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
 .muted{color:var(--muted)}
 .rule{border-left:3px solid var(--gold);padding-left:12px;color:var(--muted)}
+.msg{white-space:pre-wrap;background:var(--sunk);border-radius:10px;padding:12px 14px;font-size:14.5px;overflow-wrap:anywhere}
+.copy{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:9px;padding:6px 12px;font:inherit;font-weight:600;font-size:14px;cursor:pointer}
+.copy.done{background:var(--accent-soft);color:var(--accent);border-color:transparent}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+table.m{width:100%;border-collapse:collapse;font-size:14px}
+table.m th,table.m td{text-align:left;padding:8px;border-bottom:1px solid var(--line);vertical-align:top}
+table.m td.n{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.tw{overflow-x:auto}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 @media (max-width:480px){label.task{grid-template-columns:auto 1fr}label.task .d{grid-column:2;padding-top:0}label.task .t{grid-column:2}}
 </style>
 
 <div class="wrap">
   <header>
-    <div class="eyebrow">Défi 90 jours · IA pour les entreprises</div>
+    <div class="eyebrow">Défi 90 jours · Agence IA en sous-traitance</div>
     <h1>Plan 90 jours IA</h1>
-    <p class="lede">Objectif : apprendre à installer des assistants et des automatisations IA chez les petits commerces, puis décrocher tes premiers clients payants. Environ 6 h par jour : 4 h pour apprendre et construire, 2 h pour trouver des clients.</p>
+    <p class="lede">Ton modèle : tu trouves les clients (petits commerces), des freelances installent les solutions IA, tu gardes la marge. Ton travail au quotidien : 70 % trouver et suivre les clients, 30 % gérer les freelances et vérifier la qualité.</p>
     <div class="counter">
       <div class="tile"><b id="day">Jour —</b><span id="dayhint">Lance ton défi pour suivre les jours</span></div>
       <div class="tile"><b id="pct">0 %</b><span>des tâches faites</span></div>
@@ -70,10 +78,11 @@ ul.plain{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
   </header>
 
   <nav class="tabs" role="tablist" aria-label="Phases">
-    <button role="tab" aria-selected="true" aria-controls="p1" id="tb1">1 · Apprendre</button>
-    <button role="tab" aria-selected="false" aria-controls="p2" id="tb2">2 · Premiers clients</button>
-    <button role="tab" aria-selected="false" aria-controls="p3" id="tb3">3 · Vendre</button>
-    <button role="tab" aria-selected="false" aria-controls="p4" id="tb4">Offre & outils</button>
+    <button role="tab" aria-selected="true" aria-controls="p1" id="tb1">1 · Préparer</button>
+    <button role="tab" aria-selected="false" aria-controls="p2" id="tb2">2 · Clients</button>
+    <button role="tab" aria-selected="false" aria-controls="p3" id="tb3">3 · Développer</button>
+    <button role="tab" aria-selected="false" aria-controls="p4" id="tb4">Offres & marges</button>
+    <button role="tab" aria-selected="false" aria-controls="p5" id="tb5">Documents</button>
   </nav>
 
   <section id="p1" role="tabpanel" aria-labelledby="tb1"></section>
@@ -81,213 +90,304 @@ ul.plain{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
   <section id="p3" role="tabpanel" aria-labelledby="tb3" hidden></section>
 
   <section id="p4" role="tabpanel" aria-labelledby="tb4" hidden>
-    <h2>Ce que tu vas vendre</h2>
-    <p class="muted">Trois services simples pour les petits commerces (restaurants, coiffeurs, instituts, garages, artisans, boutiques). Les prix sont des repères de départ : baisse-les pour tes 2 premiers clients en échange d'un témoignage.</p>
-    <div class="card"><h3>Assistant de réponses automatiques</h3><p class="muted">Répond aux questions fréquentes sur Instagram, Facebook ou WhatsApp (horaires, prix, réservations) et transfère le reste au commerçant.</p><p class="price">350 à 600 € l'installation + 30 à 60 € / mois de suivi</p></div>
-    <div class="card"><h3>Réponses aux avis Google</h3><p class="muted">Chaque nouvel avis reçoit une réponse personnalisée préparée par l'IA, validée par le commerçant en un clic.</p><p class="price">150 à 300 € + 20 € / mois</p></div>
-    <div class="card"><h3>Prise de rendez-vous automatique</h3><p class="muted">Réservation en ligne, confirmation, rappel la veille, gestion des annulations.</p><p class="price">300 à 500 € + 20 à 40 € / mois</p></div>
-    <h2 style="margin-top:8px">Outils gratuits pour démarrer</h2>
-    <div class="card">
-      <ul class="plain">
-        <li><b>Claude ou ChatGPT</b> (versions gratuites) : écrire les réponses, les prompts, tes messages.</li>
-        <li><b>Make</b> (formule gratuite) et sa formation gratuite <b>Make Academy</b> : relier les outils entre eux.</li>
-        <li><b>n8n</b> : alternative à Make, gratuite si installée soi-même ; sa documentation contient des exemples prêts.</li>
-        <li><b>ManyChat</b> (formule gratuite) : réponses automatiques sur Instagram et Facebook.</li>
-        <li><b>Tally</b> (formulaires), <b>Google Sheets</b>, <b>Cal.com</b> (rendez-vous) : gratuits.</li>
-        <li><b>CapCut</b> et l'enregistreur d'écran du téléphone : tes vidéos de démonstration.</li>
-      </ul>
-      <p class="rule">Les abonnements des outils chez le client (formule payante de ManyChat, Make…) sont payés par le client, pas par toi. Indique-le dans ton devis.</p>
+    <h2>Tes offres et tes marges</h2>
+    <p class="muted">Repères de départ. Le coût freelance dépend de la personne : négocie un prix fixe par type de mission, puis garde le même freelance pour aller plus vite.</p>
+    <div class="card tw">
+      <table class="m">
+        <thead><tr><th>Service</th><th>Prix client</th><th>Freelance</th><th>Ta marge</th></tr></thead>
+        <tbody>
+          <tr><td>Assistant de réponses (Instagram, Facebook, WhatsApp)</td><td class="n">600 €</td><td class="n">300–350 €</td><td class="n">250–300 €</td></tr>
+          <tr><td>Réponses aux avis Google</td><td class="n">250 €</td><td class="n">110–130 €</td><td class="n">120–140 €</td></tr>
+          <tr><td>Prise de rendez-vous automatique</td><td class="n">450 €</td><td class="n">200–250 €</td><td class="n">200–250 €</td></tr>
+          <tr><td>Suivi mensuel (mises à jour, petites modifications)</td><td class="n">50 € / mois</td><td class="n">20 € / mois</td><td class="n">30 € / mois</td></tr>
+        </tbody>
+      </table>
     </div>
-    <h2 style="margin-top:8px">Les règles du défi</h2>
     <div class="card">
+      <h3>Les règles d'argent</h3>
       <ul class="plain">
-        <li>On ne change pas d'idée pendant 90 jours, même quand c'est dur ou lent.</li>
-        <li>Chaque jour compte, même 2 h les mauvais jours. Pas de « je reprends lundi ».</li>
-        <li>Pas de formation payante : tout ce qu'il faut est gratuit.</li>
-        <li>Honnêteté avec les clients : promettre seulement ce que tu sais installer.</li>
-        <li>Chaque dimanche : bilan de la semaine (ce qui a marché, ce qui bloque). Tu peux me l'envoyer.</li>
+        <li>Le client paie <b>50 % d'acompte</b> avant le début : c'est ce qui paie le freelance. Tu n'avances jamais d'argent.</li>
+        <li>Tu paies le freelance <b>après validation</b> de la livraison (ou 50 % au début, 50 % à la fin pour les gros projets).</li>
+        <li>Les abonnements des outils (ManyChat, Make…) sont <b>au nom et à la charge du client</b>. Indique-le dans le devis.</li>
+        <li>Le suivi mensuel, c'est ce qui construit tes revenus réguliers : propose-le à chaque client.</li>
+        <li>Tu factures le client avec ta micro-entreprise (prestation de services) ; le freelance te facture. Garde toutes les factures.</li>
       </ul>
-      <p class="rule">Aucun résultat n'est garanti. Ce plan maximise tes chances : une compétence réelle, des démonstrations concrètes et un démarchage régulier.</p>
+      <p class="rule">Pour 2 500 € de marge par mois, il faut environ 8 à 10 installations, ou moins avec des abonnements de suivi. Comptes réalistes : 1 à 2 clients le premier mois, puis ça monte avec les témoignages.</p>
     </div>
   </section>
-</div>
 
+  <section id="p5" role="tabpanel" aria-labelledby="tb5" hidden>
+    <h2>Tes documents prêts à copier</h2>
+    <p class="muted">Remplace les [crochets]. Les modèles de contrat et de devis sont une base : fais-les relire par un professionnel dès que tu as tes premiers clients.</p>
+    <div id="docs"></div>
+  </section>
+</div>
 <script>
 const PHASES = [
-  { id: "p1", goal: "Jour 30 : 3 démonstrations filmées + ton offre + tes profils en ligne", weeks: [
-    ["Semaine 1 · Les bases de l'IA", [
-      "Créer tes comptes gratuits : Claude ou ChatGPT, Make, Google (Sheets, Gmail). Choisir ta cible : commerces locaux.",
-      "Apprendre à écrire des prompts : rédige 20 prompts utiles pour un commerce (réponse client, post, réponse à un avis) et teste-les.",
-      "Make Academy : suivre le niveau débutant (vidéos gratuites), prendre des notes.",
-      "Premier scénario Make : un formulaire Tally qui remplit un Google Sheet et t'envoie un e-mail.",
-      "Ajouter l'IA dans ce scénario : la réponse à la personne est rédigée automatiquement par l'IA.",
-      "Bilan : note ce que tu as appris et ce qui t'a bloqué. Refais le scénario de A à Z sans aide.",
+  { id: "p1", goal: "Jour 14 : ton offre, ta présence en ligne et 2 freelances fiables repérés", weeks: [
+    ["Semaine 1 · Comprendre ce que tu vends", [
+      "Regarder 5 vidéos de démonstration d'assistants Instagram (ManyChat) et d'automatisations (Make). But : savoir expliquer simplement ce que ça fait.",
+      "Tester toi-même ManyChat en version gratuite sur un compte Instagram de test : une FAQ de 5 questions. Tu dois comprendre les bases, pas devenir expert.",
+      "Choisir un nom d'agence simple et vérifier qu'il est libre sur Instagram et LinkedIn.",
+      "Écrire tes 3 offres et tes prix (onglet « Offres & marges »).",
+      "Créer ta page de présentation gratuite (Notion ou Carrd) : qui tu es, tes 3 offres, comment ça se passe.",
+      "Bilan : sais-tu expliquer chaque offre en une phrase à un commerçant ? Entraîne-toi à voix haute.",
     ]],
-    ["Semaine 2 · Les assistants de messages", [
-      "Créer un compte Instagram de test et installer ManyChat (formule gratuite).",
-      "Construire une FAQ automatique : horaires, prix, adresse, réservation, pour un restaurant imaginaire.",
-      "Relier ManyChat à l'IA (via Make) pour répondre aux questions qui ne sont pas dans la FAQ.",
-      "Faire tester ton assistant par 5 proches, noter les réponses ratées, corriger.",
-      "Filmer une démonstration de 60 secondes (écran du téléphone + explication simple).",
-      "Bilan + repos.",
-    ]],
-    ["Semaine 3 · Avis Google et rendez-vous", [
-      "Automatisation des avis : un nouvel avis génère un brouillon de réponse par l'IA, envoyé au commerçant pour validation.",
-      "Prise de rendez-vous avec Cal.com : réservation, confirmation, rappel la veille.",
-      "Bonus : relance automatique des clients qui ne sont pas revenus depuis 2 mois.",
-      "Filmer une démonstration de chaque automatisation (60 s chacune).",
-      "Créer ta page portfolio gratuite (Notion ou Carrd) avec tes 3 vidéos et tes 3 offres.",
-      "Bilan + repos.",
-    ]],
-    ["Semaine 4 · Ton offre et ta présence", [
-      "Finaliser tes 3 offres et tes prix (voir l'onglet « Offre & outils »).",
-      "Profil LinkedIn : photo, titre clair (« J'installe des assistants IA pour les commerces »), tes vidéos.",
-      "Profil Malt ou ComeUp avec tes 3 offres et tes démonstrations.",
-      "Publier 3 posts (LinkedIn ou TikTok) avec tes démos : « Voilà comment un restaurant peut répondre à ses messages tout seul ».",
-      "Faire une liste de 50 commerces cibles autour de toi et en ligne (nom, réseau, contact).",
-      "Bilan du mois 1 : tu as une compétence, 3 démos et une offre. Envoie-moi ton bilan.",
+    ["Semaine 2 · Recruter tes freelances", [
+      "Publier ton annonce sur Malt et contacter 10 freelances sur Malt, Fiverr ou ComeUp avec le message « Recruter un freelance ».",
+      "Regarder leurs réalisations et leurs avis. Garder les 5 meilleurs.",
+      "Appel vidéo de 15 minutes avec chacun : demande-leur de te montrer une automatisation qu'ils ont faite et leur prix pour tes 3 offres.",
+      "Choisir 2 freelances (un principal, un de secours). Leur envoyer le contrat de sous-traitance.",
+      "Profil LinkedIn de ton agence + premier post : « J'aide les commerçants à gagner du temps grâce à l'IA ».",
+      "Faire une liste de 60 commerces cibles (nom, réseau, contact, problème probable).",
     ]],
   ]},
-  { id: "p2", goal: "Jour 60 : 2 clients tests satisfaits + 1 premier client payant", weeks: [
-    ["Semaine 5 · Prospection", [
-      "Envoyer 10 messages personnalisés à des commerces (Instagram, e-mail) avec ta démo vidéo.",
-      "10 nouveaux messages + passer voir 3 commerces près de chez toi avec ta démo sur le téléphone.",
-      "10 messages. Proposer à 2 commerces une installation gratuite ou à petit prix contre un témoignage.",
-      "Relancer une fois ceux qui n'ont pas répondu. Publier une vidéo démo.",
-      "10 messages + appeler les commerces intéressés pour comprendre leur besoin.",
-      "Bilan : combien de messages, de réponses, de rendez-vous ? Ajuster ton message.",
+  { id: "p2", goal: "Jour 60 : 3 clients signés, livrés et satisfaits", weeks: [
+    ["Semaine 3 · Lancer la prospection", [
+      "Envoyer 15 messages personnalisés à des commerces (Instagram, e-mail).",
+      "15 messages + passer voir 3 commerces avec une démo sur ton téléphone.",
+      "15 messages. Offre de lancement : -30 % pour les 3 premiers clients en échange d'un témoignage.",
+      "Relancer une fois ceux qui n'ont pas répondu.",
+      "15 messages + appeler les commerces intéressés pour comprendre leur besoin.",
+      "Bilan : messages envoyés, réponses, rendez-vous. Améliorer le message qui marche le moins.",
     ]],
-    ["Semaine 6 · Premières installations", [
-      "Client test 1 : faire la liste de ses questions fréquentes et de ses infos (horaires, prix, menu).",
-      "Client test 1 : construire et tester l'assistant avec lui.",
-      "Client test 2 : comprendre son besoin et préparer la solution.",
-      "Client test 2 : installer et tester. Continuer 5 messages de prospection par jour.",
-      "Former les 2 clients (10 minutes : comment ça marche, comment modifier une réponse).",
+    ["Semaine 4 · Premiers rendez-vous", [
+      "15 messages de prospection.",
+      "Rendez-vous : écouter le problème, montrer une démo, proposer l'offre adaptée.",
+      "Envoyer les devis et répondre aux questions.",
+      "15 messages + relances des devis.",
+      "Signer ton premier client et encaisser l'acompte de 50 %.",
       "Bilan + repos.",
     ]],
-    ["Semaine 7 · Preuves et témoignages", [
-      "Mesurer les résultats : messages traités automatiquement, temps gagné estimé.",
-      "Demander un témoignage écrit ou vidéo à chaque client test.",
-      "Transformer chaque installation en étude de cas (avant / après, temps gagné) sur ta page portfolio.",
-      "Publier les études de cas sur LinkedIn et TikTok (avec l'accord des clients).",
-      "10 messages de prospection en citant tes premiers résultats.",
+    ["Semaine 5 · Première livraison", [
+      "Rassembler les infos du client (questions fréquentes, horaires, prix, accès) et remplir le brief freelance.",
+      "Envoyer le brief au freelance, fixer la date de livraison. Continuer 10 messages par jour.",
+      "Point d'étape avec le freelance à mi-parcours.",
+      "Tester toi-même la solution avant de la montrer au client. Demander les corrections si besoin.",
+      "Livrer au client, lui montrer comment ça marche, encaisser le solde, payer le freelance.",
+      "Bilan : qu'est-ce qui a coincé ? Améliore ton brief et ta checklist.",
+    ]],
+    ["Semaine 6 · Enchaîner", [
+      "15 messages de prospection.",
+      "Demander un témoignage au premier client et en faire une étude de cas (avant / après).",
+      "Publier l'étude de cas sur LinkedIn et Instagram (avec l'accord du client).",
+      "Rendez-vous et devis.",
+      "Signer le 2e client.",
       "Bilan + repos.",
     ]],
-    ["Semaine 8 · Première vente payante", [
-      "Préparer un modèle de devis simple (prix, contenu, délai, abonnement des outils à la charge du client).",
-      "Relancer tous les contacts intéressés avec tes études de cas.",
-      "Rendez-vous de présentation : montrer la démo, écouter, proposer l'offre adaptée.",
-      "Envoyer les devis, répondre aux questions et aux objections.",
-      "Signer et encaisser ton premier client payant (acompte de 50 % avant de commencer).",
+    ["Semaine 7 · Deux clients en même temps", [
+      "Lancer la mission du 2e client avec le freelance (brief + date).",
+      "15 messages en citant ton étude de cas.",
+      "Rendez-vous et devis.",
+      "Vérifier et livrer la mission du 2e client.",
+      "Proposer le suivi mensuel à tes 2 clients.",
+      "Bilan + repos.",
+    ]],
+    ["Semaine 8 · Troisième client", [
+      "15 messages de prospection.",
+      "Rendez-vous et devis.",
+      "Signer le 3e client et lancer la mission.",
+      "Contacter le freelance de secours pour lui confier une petite mission (le tester en vrai).",
+      "Livrer, encaisser, demander un témoignage.",
       "Bilan du mois 2. Envoie-moi ton bilan.",
     ]],
   ]},
-  { id: "p3", goal: "Jour 90 : 3 à 5 clients payants + au moins 1 abonnement mensuel", weeks: [
-    ["Semaine 9 · Livrer et enchaîner", [
-      "Installer la solution du client payant, avec le même soin que pour les tests.",
-      "15 messages de prospection, en ciblant le même type de commerce que tes réussites.",
-      "Rendez-vous et devis pour 2 nouveaux prospects.",
-      "Livrer, former, demander un témoignage.",
-      "Signer le 2e client payant.",
-      "Bilan + repos.",
-    ]],
-    ["Semaine 10 · Revenus récurrents", [
-      "Créer ton offre de suivi mensuel : mises à jour des réponses, petites modifications, rapport mensuel.",
-      "Proposer le suivi mensuel à tous tes clients actuels.",
-      "Ajouter le suivi mensuel dans tous tes nouveaux devis.",
+  { id: "p3", goal: "Jour 90 : 5 clients ou plus, 3 abonnements de suivi, une agence qui tourne", weeks: [
+    ["Semaine 9 · Prix et revenus réguliers", [
+      "Fin de l'offre de lancement : passer à tes vrais prix.",
+      "Créer une formule de suivi mensuel claire et la proposer à tous les clients.",
       "15 messages de prospection.",
       "Rendez-vous et devis.",
+      "Signer un nouveau client.",
       "Bilan + repos.",
     ]],
-    ["Semaine 11 · Contenu et visibilité", [
-      "Publier une étude de cas détaillée sur LinkedIn.",
-      "Faire 3 vidéos courtes « Ce que l'IA peut faire pour un [métier] ».",
-      "Rejoindre 2 groupes d'entrepreneurs locaux en ligne et y aider sincèrement.",
-      "15 messages de prospection.",
-      "Signer le 3e client payant.",
+    ["Semaine 10 · Se spécialiser", [
+      "Regarder quel type de commerce a le plus signé (restaurants ? coiffeurs ?). C'est ta spécialité.",
+      "Adapter ta page et tes messages à cette spécialité (« L'assistant IA des restaurants de Reims »).",
+      "20 messages ciblés sur cette spécialité.",
+      "Rendez-vous et devis.",
+      "Livrer et encaisser.",
       "Bilan + repos.",
     ]],
-    ["Semaine 12 · Gagner du temps", [
-      "Transformer tes installations en modèles réutilisables (un modèle par offre).",
-      "Écrire une checklist d'installation pour aller deux fois plus vite.",
-      "Contacter 5 partenaires possibles qui parlent aux commerçants (agences web, comptables, graphistes) pour qu'ils te recommandent.",
+    ["Semaine 11 · Être recommandé", [
+      "Demander à chaque client satisfait s'il connaît un autre commerçant à qui ça rendrait service.",
+      "Contacter 5 partenaires qui parlent aux commerçants (comptables, agences web, graphistes) pour un accord de recommandation.",
       "15 messages de prospection.",
       "Rendez-vous et devis.",
+      "Signer un nouveau client.",
+      "Bilan + repos.",
+    ]],
+    ["Semaine 12 · Organiser l'agence", [
+      "Écrire ta procédure complète : du premier message au paiement du freelance.",
+      "Préparer des briefs types pour chaque offre (le freelance va plus vite, toi aussi).",
+      "Négocier un prix fixe avec ton freelance principal pour chaque offre.",
+      "15 messages de prospection.",
+      "Livrer et encaisser.",
       "Bilan + repos.",
     ]],
     ["Semaine 13 · Bilan des 90 jours", [
-      "Faire les comptes : chiffre d'affaires, nombre de clients, abonnements, temps passé.",
-      "Lister ce qui a le mieux marché (cible, message, offre) et ce qu'il faut arrêter.",
-      "Mettre à jour tes prix selon la demande.",
-      "Fixer tes objectifs des 90 prochains jours.",
-      "Envoyer ton bilan complet : on construit ensemble la suite.",
-      "Célébrer : tu as tenu 90 jours.",
+      "Faire les comptes : chiffre d'affaires, ce que tu as payé aux freelances, ta marge, tes abonnements.",
+      "Lister ce qui a marché (cible, message, offre) et ce qu'il faut arrêter.",
+      "Décider si tu augmentes tes prix ou si tu ajoutes un freelance.",
+      "Fixer les objectifs des 90 prochains jours.",
+      "Envoyer ton bilan complet : on prépare la suite ensemble.",
+      "Célébrer : tu as monté ton agence.",
     ]],
   ]},
 ];
 
-const KEY = "plan90-done", START = "plan90-start";
+const DOCS = [
+  { h: "Recruter un freelance", w: "Malt, Fiverr, ComeUp · message privé", m:
+`Bonjour [Prénom],
+
+J'ai vu vos réalisations en [automatisation / chatbots / Make / n8n], elles correspondent exactement à ce que je cherche.
+
+Je monte une agence qui installe des solutions IA pour des petits commerces (assistants de réponses Instagram / WhatsApp, réponses aux avis Google, prise de rendez-vous). Je m'occupe de trouver les clients et de la relation avec eux ; je cherche un freelance fiable pour réaliser les installations, avec des missions régulières.
+
+Pourriez-vous m'indiquer :
+1. une ou deux réalisations similaires,
+2. votre prix et votre délai pour : un assistant de réponses Instagram avec une FAQ, un système de réponses aux avis Google, une prise de rendez-vous avec rappels ?
+
+On peut en parler 15 minutes en visio cette semaine si ça vous intéresse.
+
+Merci !
+[Ton prénom]` },
+  { h: "Brief de mission pour le freelance", w: "À remplir pour chaque client", m:
+`MISSION : [type de solution]
+CLIENT : [type de commerce, ville] (le nom peut rester confidentiel)
+DATE DE LIVRAISON : [date]
+PRIX CONVENU : [montant] €
+
+CE QUE LE CLIENT VEUT :
+[Ex. : répondre automatiquement aux questions Instagram sur les horaires, le menu, les réservations]
+
+INFOS FOURNIES :
+- Questions fréquentes et réponses : [liste ou document]
+- Horaires, prix, adresse : [...]
+- Ton à employer : [vouvoiement, chaleureux…]
+- Accès : [comptes et accès que le client a créés et partagés]
+
+CE QUI EST ATTENDU À LA LIVRAISON :
+- La solution installée et testée
+- Une courte vidéo ou un document expliquant comment modifier les réponses
+- Les éventuels abonnements nécessaires (au nom du client)
+
+CORRECTIONS : 2 séries de corrections incluses après la livraison.` },
+  { h: "Contrat de sous-traitance : les points à inclure", w: "Avec chaque freelance · à faire relire", m:
+`1. Objet : réalisation de missions confiées par [nom de ton agence] pour ses clients, au cas par cas, via un brief écrit.
+2. Statut : le prestataire est indépendant (SIRET ou équivalent) et gère ses propres obligations fiscales et sociales.
+3. Prix et paiement : prix fixé par mission dans le brief ; paiement à réception de la facture, après validation de la livraison.
+4. Délais : date de livraison indiquée dans chaque brief ; prévenir immédiatement en cas de retard.
+5. Qualité : la solution doit fonctionner et correspondre au brief ; 2 séries de corrections incluses.
+6. Confidentialité : ne pas divulguer les informations et accès des clients ; les supprimer après la mission si demandé.
+7. Propriété : les livrables appartiennent au client final une fois la mission payée.
+8. Non-sollicitation : le prestataire s'engage à ne pas proposer ses services directement aux clients de l'agence pendant 12 mois après la dernière mission.
+9. Relation client : le prestataire ne contacte pas le client sans l'accord de l'agence.
+10. Résiliation : chaque partie peut arrêter la collaboration par écrit ; les missions en cours sont terminées et payées.` },
+  { h: "Modèle de devis client", w: "À envoyer après le rendez-vous", m:
+`DEVIS n° [numéro] — [date]
+[Nom de ton agence] — [Ton nom], entrepreneur individuel — SIRET [numéro]
+Client : [nom du commerce, adresse]
+
+Prestation : [ex. : Installation d'un assistant de réponses automatiques sur Instagram]
+Contenu :
+- Analyse de vos questions fréquentes
+- Installation et configuration de l'assistant
+- Tests et mise en service
+- Prise en main (explication et document)
+- 2 séries d'ajustements après la mise en service
+Délai : [X] jours après réception de l'acompte et des informations
+
+Prix : [montant] € — TVA non applicable, article 293 B du CGI
+Acompte de 50 % à la signature, solde à la livraison.
+
+Option suivi mensuel : [montant] € / mois (mises à jour des réponses, petites modifications), sans engagement.
+
+Non inclus : les abonnements éventuels aux outils utilisés (ex. formule payante de ManyChat), souscrits au nom du client.
+
+Bon pour accord, date et signature du client :` },
+  { h: "Message de prospection à un commerce", w: "Instagram · vouvoiement", m:
+`Bonjour [Prénom / nom du commerce] !
+
+[Un détail réel : j'adore vos …]. J'imagine que vous recevez beaucoup de messages pour les horaires, les réservations ou les prix ?
+
+J'aide les commerçants à répondre automatiquement à ces questions grâce à l'IA : vos clients ont une réponse tout de suite, même quand vous êtes occupé, et vous ne gérez que les demandes importantes.
+
+Je peux vous montrer en 2 minutes comment ça marche, par message ou en passant vous voir. Ça vous intéresse ?` },
+];
+
+function copyBtn(text, card) {
+  const b = document.createElement("button"); b.className = "copy"; b.type = "button"; b.textContent = "Copier";
+  b.addEventListener("click", async () => {
+    try { await navigator.clipboard.writeText(text); b.textContent = "Copié ✓"; b.classList.add("done"); }
+    catch { const r = document.createRange(); r.selectNodeContents(card.querySelector(".msg")); const s = getSelection(); s.removeAllRanges(); s.addRange(r); b.textContent = "Texte sélectionné"; }
+    setTimeout(() => { b.textContent = "Copier"; b.classList.remove("done"); }, 2200);
+  });
+  return b;
+}
+const docsRoot = document.getElementById("docs");
+for (const d of DOCS) {
+  const c = document.createElement("article"); c.className = "card";
+  const r = document.createElement("div"); r.className = "row";
+  const l = document.createElement("div");
+  const w = document.createElement("div"); w.className = "eyebrow"; w.textContent = d.w;
+  const h = document.createElement("h3"); h.textContent = d.h;
+  l.append(w, h);
+  const m = document.createElement("div"); m.className = "msg"; m.textContent = d.m;
+  r.append(l, copyBtn(d.m, c)); c.append(r, m); docsRoot.append(c);
+}
+
+const KEY = "plan90-agence-done", START = "plan90-agence-start";
 let done = {}; try { done = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch {}
 let start = null; try { start = localStorage.getItem(START); } catch {}
 const dayNum = () => start ? Math.min(91, Math.floor((Date.now() - Number(start)) / 86400000) + 1) : null;
-let total = 0, dayIndex = 0;
+let total = 0, weekCounter = 0;
 const LBL = ["Lun", "Mar", "Mer", "Jeu", "Ven", "W-E"];
-
 for (const ph of PHASES) {
   const root = document.getElementById(ph.id);
   const g = document.createElement("div"); g.className = "phase-goal";
   const gb = document.createElement("b"); gb.textContent = "Objectif"; const gs = document.createElement("span"); gs.textContent = ph.goal;
   g.append(gb, gs); root.append(g);
-  ph.weeks.forEach(([title, tasks]) => {
-    const w = document.createElement("article"); w.className = "week";
-    const firstDay = dayIndex + 1;
+  for (const [title, tasks] of ph.weeks) {
+    weekCounter++;
+    const w = document.createElement("article"); w.className = "week"; w.dataset.weekNo = String(weekCounter);
     const h = document.createElement("h3"); h.textContent = title;
-    const s = document.createElement("span");
-    w.append(h);
+    const s = document.createElement("span"); s.textContent = `Jours ${(weekCounter - 1) * 7 + 1}–${weekCounter * 7}`; h.append(s); w.append(h);
     tasks.forEach((t, i) => {
-      total++; dayIndex++;
-      // each week = 7 calendar days: Mon–Fri tasks are days 1–5, the weekend card covers days 6–7
-      const id = "d" + dayIndex;
-      const l = document.createElement("label"); l.className = "task"; l.dataset.week = String(firstDay);
+      total++;
+      const id = `w${weekCounter}d${i}`;
+      const lab = document.createElement("label"); lab.className = "task";
       const inp = document.createElement("input"); inp.type = "checkbox"; inp.id = id; inp.checked = !!done[id];
       inp.addEventListener("change", () => { done[id] = inp.checked; try { localStorage.setItem(KEY, JSON.stringify(done)); } catch {} refresh(); });
       const d = document.createElement("span"); d.className = "d"; d.textContent = LBL[i];
       const tt = document.createElement("span"); tt.className = "t"; tt.textContent = t;
-      l.append(inp, d, tt); w.append(l);
+      lab.append(inp, d, tt); w.append(lab);
     });
-    const weekNo = Math.ceil(firstDay / 6);
-    s.textContent = `Jours ${(weekNo - 1) * 7 + 1}–${weekNo * 7}`; h.append(s);
-    w.dataset.weekNo = String(weekNo);
     root.append(w);
-  });
+  }
 }
-
+const phaseOfWeek = (wk) => (wk <= 2 ? 0 : wk <= 8 ? 1 : 2);
 function refresh() {
-  const n = Object.values(done).filter(Boolean).length;
-  const p = Math.round(100 * n / total);
-  document.getElementById("pct").textContent = p + " %";
-  document.getElementById("bar").style.width = p + "%";
+  const n = Object.values(done).filter(Boolean).length, p = Math.round(100 * n / total);
+  document.getElementById("pct").textContent = p + " %"; document.getElementById("bar").style.width = p + "%";
   const dn = dayNum();
-  const startBtn = document.getElementById("start");
   if (dn) {
-    document.getElementById("day").textContent = dn > 90 ? "Défi terminé" : `Jour ${dn} / 90`;
-    document.getElementById("dayhint").textContent = `Semaine ${Math.min(13, Math.ceil(dn / 7))} en cours`;
-    startBtn.textContent = "Recommencer le compteur";
     const wk = Math.min(13, Math.ceil(dn / 7));
+    document.getElementById("day").textContent = dn > 90 ? "Défi terminé" : `Jour ${dn} / 90`;
+    document.getElementById("dayhint").textContent = `Semaine ${wk} en cours`;
+    document.getElementById("start").textContent = "Recommencer le compteur";
     document.querySelectorAll(".week").forEach((w) => w.classList.toggle("now", w.dataset.weekNo === String(wk)));
   }
 }
-let confirmArmed = false;
+let armed = false;
 document.getElementById("start").addEventListener("click", (e) => {
-  if (start && !confirmArmed) { confirmArmed = true; e.target.textContent = "Confirmer : remettre à zéro ?"; return; }
-  start = String(Date.now()); confirmArmed = false;
-  try { localStorage.setItem(START, start); } catch {}
-  refresh();
-  const wk = Math.min(13, Math.ceil(dayNum() / 7)); openPhase(wk <= 4 ? 0 : wk <= 8 ? 1 : 2);
+  if (start && !armed) { armed = true; e.target.textContent = "Confirmer : remettre à zéro ?"; return; }
+  start = String(Date.now()); armed = false; try { localStorage.setItem(START, start); } catch {}
+  refresh(); openTab(phaseOfWeek(Math.ceil(dayNum() / 7)));
 });
 const tabs = [...document.querySelectorAll('[role="tab"]')];
-function openPhase(i) { tabs.forEach((t, j) => { t.setAttribute("aria-selected", j === i); document.getElementById(t.getAttribute("aria-controls")).hidden = j !== i; }); }
-tabs.forEach((t, i) => t.addEventListener("click", () => openPhase(i)));
+function openTab(i) { tabs.forEach((t, j) => { t.setAttribute("aria-selected", j === i); document.getElementById(t.getAttribute("aria-controls")).hidden = j !== i; }); }
+tabs.forEach((t, i) => t.addEventListener("click", () => openTab(i)));
 refresh();
-const dn0 = dayNum(); if (dn0) { const wk = Math.min(13, Math.ceil(dn0 / 7)); openPhase(wk <= 4 ? 0 : wk <= 8 ? 1 : 2); }
+if (dayNum()) openTab(phaseOfWeek(Math.min(13, Math.ceil(dayNum() / 7))));
 </script>
