@@ -1,0 +1,331 @@
+<title>Kit de lancement délègue.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@600;800&family=Geist:wght@400;500;600&family=Geist+Mono:wght@500&display=swap">
+<style>
+/* Layout: one reading column (780px) with sticky tab row; each tab is a list of copyable message cards or a checklist. Brand = délègue. (ink + amber). */
+:root{
+  --bg:#F6F7F9; --surface:#FFFFFF; --sunk:#EEF0F4; --ink:#0B1220; --muted:#566074; --line:#DFE3EA;
+  --accent:#E8912D; --accent-ink:#1A1206; --accent-soft:#FCEBD6; --ok:#0F766E; --ok-soft:#DDF3EF;
+  --display:'Schibsted Grotesk','Geist',system-ui,sans-serif; --body:'Geist',system-ui,-apple-system,'Segoe UI',sans-serif; --mono:'Geist Mono',ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#0A0E16;--surface:#121826;--sunk:#0E1420;--ink:#E9EDF5;--muted:#97A1B5;--line:#232C3D;--accent:#F2A74B;--accent-ink:#1A1206;--accent-soft:#3A2911;--ok:#3CC7B5;--ok-soft:#10302C;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0A0E16;--surface:#121826;--sunk:#0E1420;--ink:#E9EDF5;--muted:#97A1B5;--line:#232C3D;--accent:#F2A74B;--accent-ink:#1A1206;--accent-soft:#3A2911;--ok:#3CC7B5;--ok-soft:#10302C;color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15.5px;line-height:1.6;padding-inline:16px;padding-block:0 64px;margin:0}
+h1,h2,h3{font-family:var(--display);line-height:1.12;margin:0;text-wrap:balance;letter-spacing:-.02em}
+p{margin:0}
+.wrap{max-width:780px;margin-inline:auto}
+header.top{padding-block:32px 8px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-size:clamp(30px,6vw,44px);font-weight:800;margin-top:10px}
+h1 i{font-style:normal;color:var(--accent)}
+.lede{color:var(--muted);margin-top:10px;max-width:62ch}
+nav.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--line);margin:20px -16px 0;padding:8px 16px 0}
+nav.tabs button{border:0;background:none;font:inherit;font-weight:600;color:var(--muted);padding:10px 12px;border-bottom:2px solid transparent;white-space:nowrap;cursor:pointer}
+nav.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+section{padding-top:24px;display:flex;flex-direction:column;gap:14px}
+section h2{font-size:24px}
+.intro{color:var(--muted)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.card h3{font-size:16.5px}
+.where{font-family:var(--mono);font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.msg{white-space:pre-wrap;background:var(--sunk);border-radius:10px;padding:12px 14px;font-size:14.5px;overflow-wrap:anywhere}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.copy{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:9px;padding:7px 12px;font:inherit;font-weight:600;font-size:14px;cursor:pointer}
+.copy.done{background:var(--ok-soft);color:var(--ok);border-color:transparent}
+.rule{background:var(--accent-soft);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:6px}
+.rule b{font-family:var(--display)}
+ul.plain{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
+.week{display:flex;flex-direction:column;gap:8px}
+.week h3{font-size:18px;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.week h3 span{font-family:var(--mono);font-size:12px;color:var(--muted);font-weight:500}
+label.task{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border-radius:9px;cursor:pointer}
+label.task:hover{background:var(--sunk)}
+label.task input{margin-top:4px;accent-color:var(--accent);width:16px;height:16px;flex:none}
+label.task input:checked + span{color:var(--muted);text-decoration:line-through}
+.goal{font-family:var(--mono);font-size:12.5px;color:var(--accent-ink);background:var(--accent);border-radius:6px;padding:2px 8px;align-self:flex-start}
+.qa{display:flex;flex-direction:column;gap:6px}
+.qa .q{font-weight:600}
+.qa .a{color:var(--muted)}
+.progress{height:6px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+@media (prefers-reduced-motion:reduce){.progress i{transition:none}}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="eyebrow">Lancement · 30 jours</div>
+    <h1>Kit de lancement délègue<i>.</i></h1>
+    <p class="lede">Tout ce qu'il faut pour trouver tes premiers experts et tes premiers clients. Copie, personnalise le prénom et le détail entre crochets, envoie.</p>
+  </header>
+  <nav class="tabs" role="tablist" aria-label="Sections du kit">
+    <button role="tab" aria-selected="true" aria-controls="t-plan" id="b-plan">Plan 30 jours</button>
+    <button role="tab" aria-selected="false" aria-controls="t-experts" id="b-experts">Messages experts</button>
+    <button role="tab" aria-selected="false" aria-controls="t-clients" id="b-clients">Messages clients</button>
+    <button role="tab" aria-selected="false" aria-controls="t-terrain" id="b-terrain">En face à face</button>
+    <button role="tab" aria-selected="false" aria-controls="t-objections" id="b-objections">Objections</button>
+    <button role="tab" aria-selected="false" aria-controls="t-videos" id="b-videos">Vidéos TikTok</button>
+  </nav>
+
+  <section id="t-plan" role="tabpanel" aria-labelledby="b-plan">
+    <h2>Plan des 30 premiers jours</h2>
+    <p class="intro">Coche au fur et à mesure (les cases restent cochées sur cet appareil).</p>
+    <div class="progress" aria-hidden="true"><i id="bar"></i></div>
+    <div id="plan"></div>
+    <div class="rule"><b>Les règles d'or du démarchage</b>
+      <ul class="plain">
+        <li>Toujours personnaliser : le prénom et un détail réel (une de ses vidéos, sa boutique, son activité). Jamais de copier-coller identique à 100 personnes.</li>
+        <li>20 à 30 messages par jour maximum, à la main. Les envois en masse se font bloquer et donnent une mauvaise image.</li>
+        <li>Une seule relance, 3 à 5 jours après. Si la personne dit non ou ne répond pas, on n'insiste pas.</li>
+        <li>Par e-mail à une entreprise : proposer clairement de ne plus recevoir de messages (« dites-moi si vous préférez ne plus être contacté »).</li>
+        <li>Note chaque contact dans un tableau (nom, où, date, réponse) pour suivre tes relances.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="t-experts" role="tabpanel" aria-labelledby="b-experts" hidden>
+    <h2>Recruter les experts</h2>
+    <p class="intro">Cherche sur LinkedIn et Malt : « automatisation », « n8n », « Make », « Zapier », « agent IA », « no-code ». Sur TikTok et YouTube : les créateurs qui montrent leurs automatisations. Vise des gens qui ont déjà des réalisations à montrer.</p>
+    <div id="experts"></div>
+  </section>
+
+  <section id="t-clients" role="tabpanel" aria-labelledby="b-clients" hidden>
+    <h2>Trouver les premiers clients</h2>
+    <p class="intro">Commence par les commerces et indépendants qui reçoivent beaucoup de messages ou d'appels : restaurants, boulangeries, coiffeurs, instituts, garages, artisans, e-commerçants. Le diagnostic gratuit est ton meilleur argument : il ne coûte rien et prend 30 secondes.</p>
+    <div id="clients"></div>
+  </section>
+
+  <section id="t-terrain" role="tabpanel" aria-labelledby="b-terrain" hidden>
+    <h2>Script en face à face (2 minutes)</h2>
+    <p class="intro">À faire en heure creuse (milieu d'après-midi), jamais pendant le rush. Téléphone en main avec le site ouvert.</p>
+    <div id="terrain"></div>
+  </section>
+
+  <section id="t-objections" role="tabpanel" aria-labelledby="b-objections" hidden>
+    <h2>Répondre aux objections</h2>
+    <div id="objections"></div>
+  </section>
+
+  <section id="t-videos" role="tabpanel" aria-labelledby="b-videos" hidden>
+    <h2>Idées de vidéos TikTok / Reels</h2>
+    <p class="intro">Filme ton écran pendant un vrai diagnostic, avec ta voix ou du texte à l'écran. Une vidéo par jour pendant le lancement.</p>
+    <div id="videos"></div>
+  </section>
+</div>
+
+<script>
+const SITE = "[lien du site]";
+const PLAN = [
+  { t: "Semaine 1 · Préparer", goal: "Site en ligne + 5 experts contactés par jour", tasks: [
+    "Créer les comptes Vercel et Turso et mettre le site en ligne (mode démo)",
+    "Compléter les pages légales (identité, médiateur) et ajouter l'activité à ta micro-entreprise",
+    "Créer une page LinkedIn et un compte TikTok / Instagram « délègue. »",
+    "Préparer ton tableau de suivi des contacts (nom, plateforme, date, réponse, relance)",
+    "Envoyer les 30 premiers messages aux experts (LinkedIn, Malt, TikTok)" ] },
+  { t: "Semaine 2 · Recruter les experts", goal: "10 experts validés", tasks: [
+    "Relancer une fois les experts qui n'ont pas répondu",
+    "Faire un appel de 15 minutes avec chaque expert intéressé (voir une de ses réalisations, vérifier le SIRET)",
+    "Valider les bons profils depuis l'espace admin",
+    "Demander à chaque expert validé de partager le site à 1 ou 2 freelances sérieux qu'il connaît",
+    "Publier 3 vidéos TikTok (diagnostic en direct)" ] },
+  { t: "Semaine 3 · Premiers clients", goal: "20 commerces rencontrés ou contactés, 3 missions", tasks: [
+    "Faire le tour de 10 commerces près de chez toi avec le script face à face",
+    "Envoyer 20 messages à des e-commerçants et indépendants (Instagram, LinkedIn, groupes Facebook)",
+    "Publier dans 3 groupes Facebook d'entrepreneurs (en respectant leurs règles)",
+    "Accompagner de près chaque première mission (message à l'expert et au client à chaque étape)",
+    "Publier une vidéo par jour" ] },
+  { t: "Semaine 4 · Faire tourner", goal: "Premiers avis + paiements réels activés", tasks: [
+    "Activer Stripe (avec les clés de test d'abord, puis en réel)",
+    "Demander un avis à chaque client satisfait, sur la plateforme",
+    "Transformer chaque mission réussie en exemple concret (vidéo ou post : « ce garage gagne 5 h par semaine »)",
+    "Faire le bilan : quels messages ont le mieux marché ? Garder ceux-là, arrêter les autres",
+    "Fixer l'objectif du mois 2 (nombre de missions, nombre d'experts)" ] },
+];
+const EXPERTS = [
+  { h: "Premier message LinkedIn", w: "LinkedIn · invitation ou message", m:
+`Bonjour [Prénom],
+
+J'ai vu [votre post sur l'automatisation de … / vos réalisations n8n], c'est exactement le profil que je cherche.
+
+Je lance délègue., une plateforme qui envoie des clients aux experts en automatisation IA : des commerçants, artisans et e-commerçants qui décrivent leur problème, reçoivent un diagnostic, et paient la mission à l'avance.
+
+Pour vous : inscription gratuite, 15 % de commission seulement sur les missions, paiement garanti à la validation. Je sélectionne les 20 premiers experts.
+
+Ça vous dit d'en discuter 10 minutes cette semaine ?` },
+  { h: "Message court (Malt, TikTok, Instagram)", w: "Message privé", m:
+`Salut [Prénom] ! J'ai vu [ta vidéo sur … / ton profil], super boulot.
+
+Je lance délègue. : des petites entreprises y décrivent un besoin (réponses automatiques, prise de RDV, devis…) et des experts comme toi l'installent. Le client paie avant, tu es payé à la validation, 15 % de commission.
+
+Je cherche les 20 premiers experts, ça t'intéresse ? ${SITE}/experts/rejoindre` },
+  { h: "Publication dans une communauté (Discord, Facebook, forum)", w: "Post communauté · vérifier les règles du groupe", m:
+`Salut à tous 👋
+
+Je lance délègue., une plateforme qui met en relation des petites entreprises avec des freelances en automatisation et IA (n8n, Make, Zapier, agents IA, chatbots…).
+
+Comment ça marche : l'entreprise décrit son problème, un diagnostic IA le transforme en besoin clair avec un budget indicatif, puis elle choisit un expert et paie à l'avance. L'expert est payé dès que le client valide.
+
+Je recrute les 20 premiers experts (profils vérifiés, inscription gratuite, 15 % de commission). Si ça vous parle, le lien est ici : ${SITE}/experts/rejoindre
+
+Je réponds à toutes les questions en commentaire !` },
+  { h: "Relance (une seule fois, 3 à 5 jours après)", w: "Relance", m:
+`Re-bonjour [Prénom], je me permets une petite relance. Les premières missions arrivent bientôt sur délègue. et il reste quelques places parmi les experts fondateurs. Si ce n'est pas le bon moment, aucun souci, dites-le-moi simplement !` },
+  { h: "Après l'appel : valider un expert", w: "Message de bienvenue", m:
+`Merci pour l'échange [Prénom] ! Votre profil est validé, il est maintenant visible sur délègue.
+
+Deux choses pour bien démarrer :
+1. Complétez « Mes paiements » pour recevoir vos versements.
+2. Si vous connaissez 1 ou 2 freelances sérieux en automatisation, n'hésitez pas à leur transmettre le lien : ${SITE}/experts/rejoindre
+
+Je vous préviens dès qu'une mission correspond à vos spécialités.` },
+];
+const CLIENTS = [
+  { h: "Message Instagram à un commerce", w: "Message privé Instagram · vouvoiement", m:
+`Bonjour [Prénom / nom du commerce] !
+
+J'adore [un détail réel : vos pâtisseries, votre dernière vidéo…]. J'imagine que vous recevez beaucoup de messages pour les horaires, les commandes, les prix ?
+
+J'ai créé délègue. : en 30 secondes, un diagnostic gratuit vous montre comment l'IA peut répondre à ces messages à votre place, combien d'heures ça vous fait gagner et combien ça coûte. Ensuite, un expert peut l'installer pour vous.
+
+Le diagnostic est gratuit, sans inscription : ${SITE}
+Je peux aussi passer vous le montrer, si vous préférez !` },
+  { h: "Message à un e-commerçant / dropshipper", w: "Instagram, groupes e-commerce", m:
+`Salut [Prénom] ! Je vois que tu gères [ta boutique …]. Le SAV (où est ma commande, retours, questions produit) te prend combien de temps par jour ?
+
+J'ai lancé délègue. : tu décris le problème, tu reçois un diagnostic gratuit (solution, temps gagné, prix), et un expert peut automatiser ton SAV avec l'IA. Tu paies à l'avance mais l'expert n'est payé que quand tu valides.
+
+Le diagnostic prend 30 secondes : ${SITE}` },
+  { h: "E-mail à une entreprise", w: "E-mail · une seule relance", m:
+`Objet : Gagner quelques heures par semaine chez [nom de l'entreprise]
+
+Bonjour [Prénom],
+
+Je suis [ton prénom], fondateur de délègue., une plateforme qui aide les indépendants et les petites entreprises à automatiser leurs tâches répétitives avec l'IA (réponses aux clients, prises de rendez-vous, devis, avis Google…).
+
+Sur notre site, un diagnostic gratuit de 30 secondes indique ce qui peut être automatisé chez vous, le temps gagné et le budget. Un expert vérifié peut ensuite l'installer ; vous ne le payez qu'une fois la solution validée.
+
+Le diagnostic est ici : ${SITE}
+
+Bonne journée,
+[ton prénom]
+P.S. Si vous préférez ne plus recevoir de message de ma part, répondez simplement « non merci ».` },
+  { h: "Publication dans un groupe d'entrepreneurs", w: "Groupe Facebook / LinkedIn · vérifier les règles", m:
+`Question aux indépendants et commerçants du groupe : quelle tâche répétitive vous prend le plus de temps chaque semaine ? 🤔
+
+(Messages clients, devis, rendez-vous, réseaux sociaux, factures…)
+
+Je viens de lancer un diagnostic gratuit qui vous dit en 30 secondes ce que l'IA peut faire à votre place, combien d'heures ça fait gagner et combien ça coûte : ${SITE}
+
+Je lis toutes les réponses, et je peux faire le diagnostic avec vous en commentaire si vous voulez !` },
+];
+const TERRAIN = [
+  { h: "1. L'accroche (10 secondes)", w: "En entrant", m:
+`« Bonjour, je ne vous embête pas longtemps ! Je m'appelle [prénom], je suis de Reims. Je fais une petite enquête auprès des commerçants : qu'est-ce qui vous prend le plus de temps dans la semaine, à part votre métier ? »` },
+  { h: "2. Écouter (1 minute)", w: "Laisser parler", m:
+`Laisse la personne répondre et relance avec une seule question :
+« Ça vous prend combien de temps par jour, à peu près ? »
+
+Les réponses fréquentes : les messages Instagram ou WhatsApp, le téléphone pendant le travail, les devis le soir, les réseaux sociaux, la compta.` },
+  { h: "3. Montrer le diagnostic (30 secondes)", w: "Téléphone en main", m:
+`« Regardez, je tape exactement ce que vous venez de me dire… »
+→ Tu tapes sa phrase dans le diagnostic et tu lui montres le résultat : la solution, les heures gagnées, le prix.
+
+« Ça, un expert peut vous l'installer en quelques jours. Vous payez à l'avance, mais il n'est payé que si vous êtes satisfait. »` },
+  { h: "4. Conclure sans forcer", w: "Partir en laissant le lien", m:
+`« Je vous laisse le lien, vous pouvez refaire le diagnostic tranquillement : [lien ou carte avec QR code]. Si vous voulez lancer quelque chose, je suis votre interlocuteur et je suis la mission avec vous. Bonne journée ! »
+
+Note dans ton tableau : nom du commerce, problème, intérêt (oui / peut-être / non), date de recontact.` },
+];
+const OBJ = [
+  ["« L'IA, c'est pas pour moi, j'y connais rien. »", "Justement, vous n'avez rien à faire de technique : l'expert installe tout et vous montre comment ça marche. Vous, vous gagnez juste du temps."],
+  ["« C'est trop cher. »", "Le diagnostic indique les heures gagnées. 400 € pour gagner 5 heures par semaine, c'est rentabilisé en quelques semaines. Et il existe des solutions dès 190 €."],
+  ["« Et si ça ne marche pas ? »", "Vous payez à l'avance, mais l'argent est bloqué. L'expert n'est payé que quand vous validez. S'il y a un problème, on tranche et vous pouvez être remboursé."],
+  ["« Mes clients préfèrent parler à un humain. »", "L'assistant répond seulement aux questions simples (horaires, prix, suivi) et vous transmet tout le reste. Vos clients ont une réponse tout de suite au lieu d'attendre."],
+  ["(Expert) « 15 % de commission, c'est beaucoup. »", "C'est moins que la plupart des plateformes, et vous ne payez que sur les missions que vous faites. On vous apporte le client, le paiement est garanti et vous n'avez pas à démarcher."],
+  ["(Expert) « Vous avez déjà des clients ? »", "On démarre, et c'est pour ça que je recrute les experts fondateurs maintenant : vous serez parmi les premiers recommandés sur les diagnostics. Je vous préviens dès que les premières missions de votre spécialité arrivent."],
+];
+const VIDEOS = [
+  { h: "Le diagnostic en direct", w: "Écran filmé · 20 s", m:
+`Accroche à l'écran : « Ce coiffeur perd 1 h par jour au téléphone. Voilà ce que l'IA propose. »
+→ Tu tapes la phrase dans le diagnostic, tu montres le résultat (solution, heures gagnées, prix).
+Fin : « Fais le tien, c'est gratuit, lien en bio. »` },
+  { h: "« Dis-moi ton métier »", w: "Série · face caméra ou texte", m:
+`Accroche : « Dis-moi ton métier en commentaire, je te dis ce que l'IA peut faire à ta place. »
+→ Les jours suivants, une vidéo par commentaire : tu fais son diagnostic en direct.` },
+  { h: "Avant / après", w: "Témoignage (avec accord du client)", m:
+`Accroche : « Avant : 2 h par jour sur Instagram. Après : 10 minutes. »
+→ Montre la solution installée chez un vrai client (avec son accord écrit), et le temps gagné.
+Uniquement avec de vrais résultats, jamais inventés.` },
+  { h: "Pour les experts", w: "Recrutement", m:
+`Accroche : « Tu sais faire des automatisations n8n ou Make ? Des commerçants cherchent quelqu'un comme toi. »
+→ Explique : les clients arrivent avec un besoin clair et paient à l'avance.
+Fin : « Je recrute les 20 premiers experts, lien en bio. »` },
+  { h: "Les coulisses du lancement", w: "Storytelling", m:
+`Accroche : « Jour 1 de ma plateforme. Objectif : 10 experts et 3 clients en 30 jours. »
+→ Une vidéo tous les 2-3 jours avec les vrais chiffres (contacts, réponses, missions).
+Les gens suivent l'aventure et en parlent autour d'eux.` },
+];
+
+// --- render
+function copyBtn(text) {
+  const b = document.createElement("button");
+  b.className = "copy"; b.type = "button"; b.textContent = "Copier";
+  b.addEventListener("click", async () => {
+    try { await navigator.clipboard.writeText(text); b.textContent = "Copié ✓"; b.classList.add("done"); }
+    catch { const r = document.createRange(); r.selectNodeContents(b.closest(".card").querySelector(".msg")); const s = getSelection(); s.removeAllRanges(); s.addRange(r); b.textContent = "Texte sélectionné"; }
+    setTimeout(() => { b.textContent = "Copier"; b.classList.remove("done"); }, 2200);
+  });
+  return b;
+}
+function cards(id, list) {
+  const root = document.getElementById(id);
+  for (const it of list) {
+    const c = document.createElement("article"); c.className = "card";
+    const head = document.createElement("div"); head.className = "row";
+    const left = document.createElement("div");
+    const w = document.createElement("div"); w.className = "where"; w.textContent = it.w;
+    const h = document.createElement("h3"); h.textContent = it.h;
+    left.append(w, h); head.append(left, copyBtn(it.m));
+    const m = document.createElement("div"); m.className = "msg"; m.textContent = it.m;
+    c.append(head, m); root.append(c);
+  }
+}
+cards("experts", EXPERTS); cards("clients", CLIENTS); cards("terrain", TERRAIN); cards("videos", VIDEOS);
+const objRoot = document.getElementById("objections");
+for (const [q, a] of OBJ) {
+  const c = document.createElement("article"); c.className = "card qa";
+  const qq = document.createElement("p"); qq.className = "q"; qq.textContent = q;
+  const aa = document.createElement("p"); aa.className = "a"; aa.textContent = a;
+  c.append(qq, aa); objRoot.append(c);
+}
+// plan with saved ticks
+const KEY = "delegue-kit-plan";
+let done = {}; try { done = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch {}
+const planRoot = document.getElementById("plan"); let total = 0;
+PLAN.forEach((wk, wi) => {
+  const c = document.createElement("article"); c.className = "card week";
+  const h = document.createElement("h3"); h.textContent = wk.t;
+  const g = document.createElement("span"); g.className = "goal"; g.textContent = "Objectif : " + wk.goal;
+  c.append(h, g);
+  wk.tasks.forEach((t, ti) => {
+    total++;
+    const id = `w${wi}t${ti}`;
+    const l = document.createElement("label"); l.className = "task";
+    const i = document.createElement("input"); i.type = "checkbox"; i.id = id; i.checked = !!done[id];
+    i.addEventListener("change", () => { done[id] = i.checked; try { localStorage.setItem(KEY, JSON.stringify(done)); } catch {} bar(); });
+    const s = document.createElement("span"); s.textContent = t;
+    l.append(i, s); c.append(l);
+  });
+  planRoot.append(c);
+});
+function bar() { const n = Object.values(done).filter(Boolean).length; document.getElementById("bar").style.width = Math.round(100 * n / total) + "%"; }
+bar();
+// tabs
+const tabs = [...document.querySelectorAll('[role="tab"]')];
+tabs.forEach((t) => t.addEventListener("click", () => {
+  tabs.forEach((x) => { x.setAttribute("aria-selected", x === t); document.getElementById(x.getAttribute("aria-controls")).hidden = x !== t; });
+  window.scrollTo({ top: 0 });
+}));
+</script>
