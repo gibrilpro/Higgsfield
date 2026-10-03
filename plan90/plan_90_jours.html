@@ -1,0 +1,293 @@
+<title>Plan 90 jours IA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: single 760px column — header with day counter + progress, phase tabs, week cards of daily checkboxes; a side "offre & outils" section at the end. */
+:root{
+  --bg:#F3F5F2; --surface:#FFFFFF; --sunk:#E9EDE7; --ink:#121A14; --muted:#57635A; --line:#D9DFD6;
+  --accent:#2F6B4F; --accent-ink:#FFFFFF; --accent-soft:#DCEBE2; --gold:#B7791F; --gold-soft:#F7ECD8;
+  --display:'Bricolage Grotesque','Figtree',system-ui,sans-serif; --body:'Figtree',system-ui,-apple-system,'Segoe UI',sans-serif; --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#0D120F;--surface:#151C17;--sunk:#101612;--ink:#E7EEE9;--muted:#9BA89F;--line:#25302A;--accent:#6CC79A;--accent-ink:#0B130E;--accent-soft:#18301F;--gold:#E7B65A;--gold-soft:#33270F;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0D120F;--surface:#151C17;--sunk:#101612;--ink:#E7EEE9;--muted:#9BA89F;--line:#25302A;--accent:#6CC79A;--accent-ink:#0B130E;--accent-soft:#18301F;--gold:#E7B65A;--gold-soft:#33270F;color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15.5px;line-height:1.6;margin:0;padding-inline:16px;padding-block:0 64px}
+h1,h2,h3{font-family:var(--display);line-height:1.1;margin:0;text-wrap:balance;letter-spacing:-.02em}
+p{margin:0}
+.wrap{max-width:760px;margin-inline:auto}
+header{padding-block:32px 8px;display:flex;flex-direction:column;gap:12px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-size:clamp(30px,6vw,46px);font-weight:800}
+.lede{color:var(--muted);max-width:60ch}
+.counter{display:flex;gap:12px;flex-wrap:wrap;align-items:stretch}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 16px;min-width:0;flex:1 1 140px}
+.tile b{display:block;font-family:var(--mono);font-size:22px;font-weight:500;font-variant-numeric:tabular-nums}
+.tile span{font-size:12.5px;color:var(--muted)}
+.btn{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;padding:9px 14px;font:inherit;font-weight:600;cursor:pointer}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.progress{height:8px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.progress i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+@media (prefers-reduced-motion:reduce){.progress i{transition:none}}
+nav.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--line);margin:16px -16px 0;padding:8px 16px 0}
+nav.tabs button{border:0;background:none;font:inherit;font-weight:600;color:var(--muted);padding:10px 12px;border-bottom:2px solid transparent;white-space:nowrap;cursor:pointer}
+nav.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+section{padding-top:22px;display:flex;flex-direction:column;gap:14px}
+.phase-goal{background:var(--gold-soft);border-radius:12px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.phase-goal b{font-family:var(--display);font-size:17px}
+.week{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:6px}
+.week h3{font-size:18px;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:baseline}
+.week h3 span{font-family:var(--mono);font-size:12px;color:var(--muted);font-weight:500}
+.week.now{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+label.task{display:grid;grid-template-columns:auto 52px 1fr;gap:10px;align-items:start;padding:7px 8px;border-radius:9px;cursor:pointer}
+label.task:hover{background:var(--sunk)}
+label.task input{margin-top:4px;width:16px;height:16px;accent-color:var(--accent)}
+label.task .d{font-family:var(--mono);font-size:12px;color:var(--muted);padding-top:3px}
+label.task.today .d{color:var(--accent);font-weight:700}
+label.task input:checked ~ .t{color:var(--muted);text-decoration:line-through}
+.t{min-width:0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:8px}
+.card h3{font-size:17px}
+.price{font-family:var(--mono);color:var(--accent);font-size:14px}
+ul.plain{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
+.muted{color:var(--muted)}
+.rule{border-left:3px solid var(--gold);padding-left:12px;color:var(--muted)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (max-width:480px){label.task{grid-template-columns:auto 1fr}label.task .d{grid-column:2;padding-top:0}label.task .t{grid-column:2}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Défi 90 jours · IA pour les entreprises</div>
+    <h1>Plan 90 jours IA</h1>
+    <p class="lede">Objectif : apprendre à installer des assistants et des automatisations IA chez les petits commerces, puis décrocher tes premiers clients payants. Environ 6 h par jour : 4 h pour apprendre et construire, 2 h pour trouver des clients.</p>
+    <div class="counter">
+      <div class="tile"><b id="day">Jour —</b><span id="dayhint">Lance ton défi pour suivre les jours</span></div>
+      <div class="tile"><b id="pct">0 %</b><span>des tâches faites</span></div>
+      <div class="tile" style="display:flex;align-items:center"><button class="btn primary" id="start" type="button">Commencer aujourd'hui</button></div>
+    </div>
+    <div class="progress" aria-hidden="true"><i id="bar"></i></div>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Phases">
+    <button role="tab" aria-selected="true" aria-controls="p1" id="tb1">1 · Apprendre</button>
+    <button role="tab" aria-selected="false" aria-controls="p2" id="tb2">2 · Premiers clients</button>
+    <button role="tab" aria-selected="false" aria-controls="p3" id="tb3">3 · Vendre</button>
+    <button role="tab" aria-selected="false" aria-controls="p4" id="tb4">Offre & outils</button>
+  </nav>
+
+  <section id="p1" role="tabpanel" aria-labelledby="tb1"></section>
+  <section id="p2" role="tabpanel" aria-labelledby="tb2" hidden></section>
+  <section id="p3" role="tabpanel" aria-labelledby="tb3" hidden></section>
+
+  <section id="p4" role="tabpanel" aria-labelledby="tb4" hidden>
+    <h2>Ce que tu vas vendre</h2>
+    <p class="muted">Trois services simples pour les petits commerces (restaurants, coiffeurs, instituts, garages, artisans, boutiques). Les prix sont des repères de départ : baisse-les pour tes 2 premiers clients en échange d'un témoignage.</p>
+    <div class="card"><h3>Assistant de réponses automatiques</h3><p class="muted">Répond aux questions fréquentes sur Instagram, Facebook ou WhatsApp (horaires, prix, réservations) et transfère le reste au commerçant.</p><p class="price">350 à 600 € l'installation + 30 à 60 € / mois de suivi</p></div>
+    <div class="card"><h3>Réponses aux avis Google</h3><p class="muted">Chaque nouvel avis reçoit une réponse personnalisée préparée par l'IA, validée par le commerçant en un clic.</p><p class="price">150 à 300 € + 20 € / mois</p></div>
+    <div class="card"><h3>Prise de rendez-vous automatique</h3><p class="muted">Réservation en ligne, confirmation, rappel la veille, gestion des annulations.</p><p class="price">300 à 500 € + 20 à 40 € / mois</p></div>
+    <h2 style="margin-top:8px">Outils gratuits pour démarrer</h2>
+    <div class="card">
+      <ul class="plain">
+        <li><b>Claude ou ChatGPT</b> (versions gratuites) : écrire les réponses, les prompts, tes messages.</li>
+        <li><b>Make</b> (formule gratuite) et sa formation gratuite <b>Make Academy</b> : relier les outils entre eux.</li>
+        <li><b>n8n</b> : alternative à Make, gratuite si installée soi-même ; sa documentation contient des exemples prêts.</li>
+        <li><b>ManyChat</b> (formule gratuite) : réponses automatiques sur Instagram et Facebook.</li>
+        <li><b>Tally</b> (formulaires), <b>Google Sheets</b>, <b>Cal.com</b> (rendez-vous) : gratuits.</li>
+        <li><b>CapCut</b> et l'enregistreur d'écran du téléphone : tes vidéos de démonstration.</li>
+      </ul>
+      <p class="rule">Les abonnements des outils chez le client (formule payante de ManyChat, Make…) sont payés par le client, pas par toi. Indique-le dans ton devis.</p>
+    </div>
+    <h2 style="margin-top:8px">Les règles du défi</h2>
+    <div class="card">
+      <ul class="plain">
+        <li>On ne change pas d'idée pendant 90 jours, même quand c'est dur ou lent.</li>
+        <li>Chaque jour compte, même 2 h les mauvais jours. Pas de « je reprends lundi ».</li>
+        <li>Pas de formation payante : tout ce qu'il faut est gratuit.</li>
+        <li>Honnêteté avec les clients : promettre seulement ce que tu sais installer.</li>
+        <li>Chaque dimanche : bilan de la semaine (ce qui a marché, ce qui bloque). Tu peux me l'envoyer.</li>
+      </ul>
+      <p class="rule">Aucun résultat n'est garanti. Ce plan maximise tes chances : une compétence réelle, des démonstrations concrètes et un démarchage régulier.</p>
+    </div>
+  </section>
+</div>
+
+<script>
+const PHASES = [
+  { id: "p1", goal: "Jour 30 : 3 démonstrations filmées + ton offre + tes profils en ligne", weeks: [
+    ["Semaine 1 · Les bases de l'IA", [
+      "Créer tes comptes gratuits : Claude ou ChatGPT, Make, Google (Sheets, Gmail). Choisir ta cible : commerces locaux.",
+      "Apprendre à écrire des prompts : rédige 20 prompts utiles pour un commerce (réponse client, post, réponse à un avis) et teste-les.",
+      "Make Academy : suivre le niveau débutant (vidéos gratuites), prendre des notes.",
+      "Premier scénario Make : un formulaire Tally qui remplit un Google Sheet et t'envoie un e-mail.",
+      "Ajouter l'IA dans ce scénario : la réponse à la personne est rédigée automatiquement par l'IA.",
+      "Bilan : note ce que tu as appris et ce qui t'a bloqué. Refais le scénario de A à Z sans aide.",
+    ]],
+    ["Semaine 2 · Les assistants de messages", [
+      "Créer un compte Instagram de test et installer ManyChat (formule gratuite).",
+      "Construire une FAQ automatique : horaires, prix, adresse, réservation, pour un restaurant imaginaire.",
+      "Relier ManyChat à l'IA (via Make) pour répondre aux questions qui ne sont pas dans la FAQ.",
+      "Faire tester ton assistant par 5 proches, noter les réponses ratées, corriger.",
+      "Filmer une démonstration de 60 secondes (écran du téléphone + explication simple).",
+      "Bilan + repos.",
+    ]],
+    ["Semaine 3 · Avis Google et rendez-vous", [
+      "Automatisation des avis : un nouvel avis génère un brouillon de réponse par l'IA, envoyé au commerçant pour validation.",
+      "Prise de rendez-vous avec Cal.com : réservation, confirmation, rappel la veille.",
+      "Bonus : relance automatique des clients qui ne sont pas revenus depuis 2 mois.",
+      "Filmer une démonstration de chaque automatisation (60 s chacune).",
+      "Créer ta page portfolio gratuite (Notion ou Carrd) avec tes 3 vidéos et tes 3 offres.",
+      "Bilan + repos.",
+    ]],
+    ["Semaine 4 · Ton offre et ta présence", [
+      "Finaliser tes 3 offres et tes prix (voir l'onglet « Offre & outils »).",
+      "Profil LinkedIn : photo, titre clair (« J'installe des assistants IA pour les commerces »), tes vidéos.",
+      "Profil Malt ou ComeUp avec tes 3 offres et tes démonstrations.",
+      "Publier 3 posts (LinkedIn ou TikTok) avec tes démos : « Voilà comment un restaurant peut répondre à ses messages tout seul ».",
+      "Faire une liste de 50 commerces cibles autour de toi et en ligne (nom, réseau, contact).",
+      "Bilan du mois 1 : tu as une compétence, 3 démos et une offre. Envoie-moi ton bilan.",
+    ]],
+  ]},
+  { id: "p2", goal: "Jour 60 : 2 clients tests satisfaits + 1 premier client payant", weeks: [
+    ["Semaine 5 · Prospection", [
+      "Envoyer 10 messages personnalisés à des commerces (Instagram, e-mail) avec ta démo vidéo.",
+      "10 nouveaux messages + passer voir 3 commerces près de chez toi avec ta démo sur le téléphone.",
+      "10 messages. Proposer à 2 commerces une installation gratuite ou à petit prix contre un témoignage.",
+      "Relancer une fois ceux qui n'ont pas répondu. Publier une vidéo démo.",
+      "10 messages + appeler les commerces intéressés pour comprendre leur besoin.",
+      "Bilan : combien de messages, de réponses, de rendez-vous ? Ajuster ton message.",
+    ]],
+    ["Semaine 6 · Premières installations", [
+      "Client test 1 : faire la liste de ses questions fréquentes et de ses infos (horaires, prix, menu).",
+      "Client test 1 : construire et tester l'assistant avec lui.",
+      "Client test 2 : comprendre son besoin et préparer la solution.",
+      "Client test 2 : installer et tester. Continuer 5 messages de prospection par jour.",
+      "Former les 2 clients (10 minutes : comment ça marche, comment modifier une réponse).",
+      "Bilan + repos.",
+    ]],
+    ["Semaine 7 · Preuves et témoignages", [
+      "Mesurer les résultats : messages traités automatiquement, temps gagné estimé.",
+      "Demander un témoignage écrit ou vidéo à chaque client test.",
+      "Transformer chaque installation en étude de cas (avant / après, temps gagné) sur ta page portfolio.",
+      "Publier les études de cas sur LinkedIn et TikTok (avec l'accord des clients).",
+      "10 messages de prospection en citant tes premiers résultats.",
+      "Bilan + repos.",
+    ]],
+    ["Semaine 8 · Première vente payante", [
+      "Préparer un modèle de devis simple (prix, contenu, délai, abonnement des outils à la charge du client).",
+      "Relancer tous les contacts intéressés avec tes études de cas.",
+      "Rendez-vous de présentation : montrer la démo, écouter, proposer l'offre adaptée.",
+      "Envoyer les devis, répondre aux questions et aux objections.",
+      "Signer et encaisser ton premier client payant (acompte de 50 % avant de commencer).",
+      "Bilan du mois 2. Envoie-moi ton bilan.",
+    ]],
+  ]},
+  { id: "p3", goal: "Jour 90 : 3 à 5 clients payants + au moins 1 abonnement mensuel", weeks: [
+    ["Semaine 9 · Livrer et enchaîner", [
+      "Installer la solution du client payant, avec le même soin que pour les tests.",
+      "15 messages de prospection, en ciblant le même type de commerce que tes réussites.",
+      "Rendez-vous et devis pour 2 nouveaux prospects.",
+      "Livrer, former, demander un témoignage.",
+      "Signer le 2e client payant.",
+      "Bilan + repos.",
+    ]],
+    ["Semaine 10 · Revenus récurrents", [
+      "Créer ton offre de suivi mensuel : mises à jour des réponses, petites modifications, rapport mensuel.",
+      "Proposer le suivi mensuel à tous tes clients actuels.",
+      "Ajouter le suivi mensuel dans tous tes nouveaux devis.",
+      "15 messages de prospection.",
+      "Rendez-vous et devis.",
+      "Bilan + repos.",
+    ]],
+    ["Semaine 11 · Contenu et visibilité", [
+      "Publier une étude de cas détaillée sur LinkedIn.",
+      "Faire 3 vidéos courtes « Ce que l'IA peut faire pour un [métier] ».",
+      "Rejoindre 2 groupes d'entrepreneurs locaux en ligne et y aider sincèrement.",
+      "15 messages de prospection.",
+      "Signer le 3e client payant.",
+      "Bilan + repos.",
+    ]],
+    ["Semaine 12 · Gagner du temps", [
+      "Transformer tes installations en modèles réutilisables (un modèle par offre).",
+      "Écrire une checklist d'installation pour aller deux fois plus vite.",
+      "Contacter 5 partenaires possibles qui parlent aux commerçants (agences web, comptables, graphistes) pour qu'ils te recommandent.",
+      "15 messages de prospection.",
+      "Rendez-vous et devis.",
+      "Bilan + repos.",
+    ]],
+    ["Semaine 13 · Bilan des 90 jours", [
+      "Faire les comptes : chiffre d'affaires, nombre de clients, abonnements, temps passé.",
+      "Lister ce qui a le mieux marché (cible, message, offre) et ce qu'il faut arrêter.",
+      "Mettre à jour tes prix selon la demande.",
+      "Fixer tes objectifs des 90 prochains jours.",
+      "Envoyer ton bilan complet : on construit ensemble la suite.",
+      "Célébrer : tu as tenu 90 jours.",
+    ]],
+  ]},
+];
+
+const KEY = "plan90-done", START = "plan90-start";
+let done = {}; try { done = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch {}
+let start = null; try { start = localStorage.getItem(START); } catch {}
+const dayNum = () => start ? Math.min(91, Math.floor((Date.now() - Number(start)) / 86400000) + 1) : null;
+let total = 0, dayIndex = 0;
+const LBL = ["Lun", "Mar", "Mer", "Jeu", "Ven", "W-E"];
+
+for (const ph of PHASES) {
+  const root = document.getElementById(ph.id);
+  const g = document.createElement("div"); g.className = "phase-goal";
+  const gb = document.createElement("b"); gb.textContent = "Objectif"; const gs = document.createElement("span"); gs.textContent = ph.goal;
+  g.append(gb, gs); root.append(g);
+  ph.weeks.forEach(([title, tasks]) => {
+    const w = document.createElement("article"); w.className = "week";
+    const firstDay = dayIndex + 1;
+    const h = document.createElement("h3"); h.textContent = title;
+    const s = document.createElement("span");
+    w.append(h);
+    tasks.forEach((t, i) => {
+      total++; dayIndex++;
+      // each week = 7 calendar days: Mon–Fri tasks are days 1–5, the weekend card covers days 6–7
+      const id = "d" + dayIndex;
+      const l = document.createElement("label"); l.className = "task"; l.dataset.week = String(firstDay);
+      const inp = document.createElement("input"); inp.type = "checkbox"; inp.id = id; inp.checked = !!done[id];
+      inp.addEventListener("change", () => { done[id] = inp.checked; try { localStorage.setItem(KEY, JSON.stringify(done)); } catch {} refresh(); });
+      const d = document.createElement("span"); d.className = "d"; d.textContent = LBL[i];
+      const tt = document.createElement("span"); tt.className = "t"; tt.textContent = t;
+      l.append(inp, d, tt); w.append(l);
+    });
+    const weekNo = Math.ceil(firstDay / 6);
+    s.textContent = `Jours ${(weekNo - 1) * 7 + 1}–${weekNo * 7}`; h.append(s);
+    w.dataset.weekNo = String(weekNo);
+    root.append(w);
+  });
+}
+
+function refresh() {
+  const n = Object.values(done).filter(Boolean).length;
+  const p = Math.round(100 * n / total);
+  document.getElementById("pct").textContent = p + " %";
+  document.getElementById("bar").style.width = p + "%";
+  const dn = dayNum();
+  const startBtn = document.getElementById("start");
+  if (dn) {
+    document.getElementById("day").textContent = dn > 90 ? "Défi terminé" : `Jour ${dn} / 90`;
+    document.getElementById("dayhint").textContent = `Semaine ${Math.min(13, Math.ceil(dn / 7))} en cours`;
+    startBtn.textContent = "Recommencer le compteur";
+    const wk = Math.min(13, Math.ceil(dn / 7));
+    document.querySelectorAll(".week").forEach((w) => w.classList.toggle("now", w.dataset.weekNo === String(wk)));
+  }
+}
+let confirmArmed = false;
+document.getElementById("start").addEventListener("click", (e) => {
+  if (start && !confirmArmed) { confirmArmed = true; e.target.textContent = "Confirmer : remettre à zéro ?"; return; }
+  start = String(Date.now()); confirmArmed = false;
+  try { localStorage.setItem(START, start); } catch {}
+  refresh();
+  const wk = Math.min(13, Math.ceil(dayNum() / 7)); openPhase(wk <= 4 ? 0 : wk <= 8 ? 1 : 2);
+});
+const tabs = [...document.querySelectorAll('[role="tab"]')];
+function openPhase(i) { tabs.forEach((t, j) => { t.setAttribute("aria-selected", j === i); document.getElementById(t.getAttribute("aria-controls")).hidden = j !== i; }); }
+tabs.forEach((t, i) => t.addEventListener("click", () => openPhase(i)));
+refresh();
+const dn0 = dayNum(); if (dn0) { const wk = Math.min(13, Math.ceil(dn0 / 7)); openPhase(wk <= 4 ? 0 : wk <= 8 ? 1 : 2); }
+</script>
