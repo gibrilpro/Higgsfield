@@ -78,27 +78,28 @@ BOWLS0, BOWLS1 = (0,400,560), (10,440,500)
 STACK0, STACK1 = (640,440,520), (670,470,470)
 TOMA0, TOMA1 = (0,100,560), (30,140,480)
 
-render('video1_pov_film_plastique', [
-    (2.8, (bg_pan, FULL0, FULL1), [("POV :", 70, 260, 'pill', 0), ("tu as jeté ton film plastique pour toujours", 64, 380, 'pill', 0.4)], False),
-    (2.4, (bg_pan, HANDS0, HANDS1), [("Tu l'étires...", 80, 300, "dark", 0.1)], False),
-    (2.6, (bg_pan, MELON0, MELON1), [("...et ça tient même sur une demi-pastèque", 70, 260, "dark", 0.1)], False),
-    (2.4, (bg_pan, BOWLS0, BOWLS1), [("Petits bols, restes, fruits coupés", 70, 280, "dark", 0.1)], False),
-    (2.4, (bg_pan, STACK0, STACK1), [("6 tailles. Réutilisables.", 76, 300, "dark", 0.1)], False),
-    (3.0, (bg_card, 0.9, 1.0), [("Lien dans la bio", 84, 230, 'pill', 0.1)], True),
-])
-render('video2_3_raisons', [
-    (2.6, (bg_solid, DEEP), [("3 raisons d'arrêter le film plastique", 96, 700, WHITE, 0.1)], True),
-    (2.6, (bg_pan, TOMA0, TOMA1), [("1", 150, 200, MINT, 0), ("Il colle partout sauf sur le bol", 70, 400, "dark", 0.25)], False),
-    (2.6, (bg_pan, MELON0, MELON1), [("2", 150, 200, MINT, 0), ("Tu le jettes après chaque usage", 70, 400, "dark", 0.25)], False),
-    (2.6, (bg_pan, HANDS0, HANDS1), [("3", 150, 200, MINT, 0), ("Il glisse sur les gros saladiers", 70, 400, "dark", 0.25)], False),
-    (3.0, (bg_pan, FULL0, FULL1), [("La solution :", 70, 260, 'pill', 0), ("6 couvercles qui s'étirent", 70, 380, 'pill', 0.35)], False),
-    (2.6, (bg_solid, DEEP), [("Lien dans la bio", 96, 760, WHITE, 0.1)], True),
-])
-render('video3_gadget_15', [
-    (3.0, (bg_card, 0.85, 1.0), [("Le gadget à moins de 15 € qui remplace le film plastique", 66, 200, 'pill', 0.1)], False),
-    (2.0, (bg_pan, HANDS0, HANDS1), [("On étire", 96, 320, "dark", 0.05)], False),
-    (2.0, (bg_pan, BOWLS0, BOWLS1), [("On pose", 96, 320, "dark", 0.05)], False),
-    (2.2, (bg_pan, MELON0, MELON1), [("Et c'est fermé", 96, 320, "dark", 0.05)], False),
-    (2.4, (bg_pan, STACK0, STACK1), [("Ça se lave et ça se réutilise", 76, 300, "dark", 0.05)], False),
-    (3.0, (bg_solid, DEEP), [("Dispo sur Novashop", 90, 700, WHITE, 0.1), ("lien dans la bio", 64, 920, MINT, 0.5)], True),
-])
+if __name__ == '__main__':
+    render('video1_pov_film_plastique', [
+        (2.8, (bg_pan, FULL0, FULL1), [("POV :", 70, 260, 'pill', 0), ("tu as jeté ton film plastique pour toujours", 64, 380, 'pill', 0.4)], False),
+        (2.4, (bg_pan, HANDS0, HANDS1), [("Tu l'étires...", 80, 300, "dark", 0.1)], False),
+        (2.6, (bg_pan, MELON0, MELON1), [("...et ça tient même sur une demi-pastèque", 70, 260, "dark", 0.1)], False),
+        (2.4, (bg_pan, BOWLS0, BOWLS1), [("Petits bols, restes, fruits coupés", 70, 280, "dark", 0.1)], False),
+        (2.4, (bg_pan, STACK0, STACK1), [("6 tailles. Réutilisables.", 76, 300, "dark", 0.1)], False),
+        (3.0, (bg_card, 0.9, 1.0), [("Lien dans la bio", 84, 230, 'pill', 0.1)], True),
+    ])
+    render('video2_3_raisons', [
+        (2.6, (bg_solid, DEEP), [("3 raisons d'arrêter le film plastique", 96, 700, WHITE, 0.1)], True),
+        (2.6, (bg_pan, TOMA0, TOMA1), [("1", 150, 200, MINT, 0), ("Il colle partout sauf sur le bol", 70, 400, "dark", 0.25)], False),
+        (2.6, (bg_pan, MELON0, MELON1), [("2", 150, 200, MINT, 0), ("Tu le jettes après chaque usage", 70, 400, "dark", 0.25)], False),
+        (2.6, (bg_pan, HANDS0, HANDS1), [("3", 150, 200, MINT, 0), ("Il glisse sur les gros saladiers", 70, 400, "dark", 0.25)], False),
+        (3.0, (bg_pan, FULL0, FULL1), [("La solution :", 70, 260, 'pill', 0), ("6 couvercles qui s'étirent", 70, 380, 'pill', 0.35)], False),
+        (2.6, (bg_solid, DEEP), [("Lien dans la bio", 96, 760, WHITE, 0.1)], True),
+    ])
+    render('video3_gadget_15', [
+        (3.0, (bg_card, 0.85, 1.0), [("Le gadget à moins de 15 € qui remplace le film plastique", 66, 200, 'pill', 0.1)], False),
+        (2.0, (bg_pan, HANDS0, HANDS1), [("On étire", 96, 320, "dark", 0.05)], False),
+        (2.0, (bg_pan, BOWLS0, BOWLS1), [("On pose", 96, 320, "dark", 0.05)], False),
+        (2.2, (bg_pan, MELON0, MELON1), [("Et c'est fermé", 96, 320, "dark", 0.05)], False),
+        (2.4, (bg_pan, STACK0, STACK1), [("Ça se lave et ça se réutilise", 76, 300, "dark", 0.05)], False),
+        (3.0, (bg_solid, DEEP), [("Dispo sur Novashop", 90, 700, WHITE, 0.1), ("lien dans la bio", 64, 920, MINT, 0.5)], True),
+    ])
