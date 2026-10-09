@@ -319,10 +319,37 @@
             "button_jrJ8Df",
             "button_aCLARA"
            ]
+          },
+          "text_coord": {
+           "type": "text",
+           "name": "t:names.text",
+           "settings": {
+            "text": "<p>E-mail : <a href=\"mailto:contact.novashop21@gmail.com\">contact.novashop21@gmail.com</a><br>Novashop – 4 Rue Joseph Haydn, 51100 Reims, France<br><a href=\"/policies/contact-information\">Coordonnées et mentions légales</a></p>",
+            "width": "fit-content",
+            "max_width": "normal",
+            "alignment": "left",
+            "type_preset": "custom",
+            "font": "var(--font-body--family)",
+            "font_size": "0.875rem",
+            "line_height": "normal",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "pretty",
+            "color": "var(--color-foreground)",
+            "background": false,
+            "background_color": "#00000026",
+            "corner_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+           },
+           "blocks": {}
           }
          },
          "block_order": [
           "text_znMkW8",
+          "text_coord",
           "group_xXUeC3"
          ]
         }
