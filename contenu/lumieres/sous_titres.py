@@ -1,10 +1,12 @@
 # Ajoute des textes style TikTok sur une vidéo. Usage : python3 sous_titres.py src.mp4 out.mp4 captions.json
 # captions.json : [[debut, fin, "texte", "tiktok"|"bulle"], ...]
-import subprocess, sys, json, re
+import subprocess, sys, json, re, os, shutil
 from PIL import Image, ImageDraw, ImageFont
 SRC, OUT, CAPS = sys.argv[1], sys.argv[2], json.load(open(sys.argv[3]))
 FF = '/usr/local/lib/python3.11/dist-packages/imageio_ffmpeg/binaries/ffmpeg-linux-x86_64-v7.0.2'
+if not os.path.exists(FF): FF = shutil.which('ffmpeg')
 F = '/tmp/claude-0/-home-user-Higgsfield/f1396b37-470e-5d2c-a699-92ef893fc7c9/scratchpad/mont/package/files/montserrat-latin-%d-normal.woff'
+if not os.path.exists(F % 800): F = '/usr/share/fonts/opentype/inter/InterDisplay-ExtraBold.otf%.0s'  # repli si Montserrat absente
 info = subprocess.run([FF, '-i', SRC], capture_output=True, text=True).stderr
 W, H = map(int, re.search(r', (\d{3,4})x(\d{3,4})', info).groups()); FPS = float(re.search(r'([\d.]+) fps', info).group(1))
 k = W / 720; Y = int(H * 0.59)
